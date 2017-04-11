@@ -1,4 +1,4 @@
-package main.java.edu.umro.RestletUtil
+package edu.umro.RestletUtil
 
 import org.restlet.security.SecretVerifier
 import org.restlet.routing.Filter

@@ -34,24 +34,34 @@ class NetworkIpFilter(context: Context, AllowedHttpIpList: List[String]) extends
                 </head>
                 <body>
                     <center>
-                        <h2>
-                            <p/><br/><p/><br/>
+                        <h2 style="margin-top:100px;">
                             You are not authorized to access this web site.
-                            <p/>
                         </h2>
                     </center>
                 </body>
             </html>
         }
-        new PrettyPrinter(1024, 2).format(message)
+        "<!DOCTYPE html>\n" + new PrettyPrinter(1024, 2).format(message)
     }
 
     override def beforeHandle(request: Request, response: Response): Int = {
+
         if (allow(request.getClientInfo.getAddress)) {
             Filter.CONTINUE
         }
         else {
-            getLogger.warning("Incoming HTTP request from " + request.getClientInfo.getAddress + " denied due to IP address filtering.")
+            val attrListText = request.getAttributes.toString.replaceAll(", ", ",\n        ")
+            val clientInfo = request.getClientInfo
+
+            val msg =
+                "Incoming HTTP request from " + request.getClientInfo.getAddress + " denied due to IP address filtering.\n" +
+                    "    HTTP Method: " + request.getMethod + "\n" +
+                    "    Original Ref: " + request.getOriginalRef + "\n" +
+                    "    Client Port: " + clientInfo.getPort + "\n" +
+                    "    Client Accepted CharacterSets: " + clientInfo.getAcceptedCharacterSets + "\n" +
+                    "    Client Accepted Languages: " + clientInfo.getAcceptedLanguages + "\n" +
+                    "    Attributes:\n        " + attrListText + "\n"
+            getLogger.warning(msg)
             response.setStatus(Status.CLIENT_ERROR_FORBIDDEN)
             response.setEntity(forbidden, MediaType.TEXT_HTML)
             Filter.STOP
