@@ -14,15 +14,21 @@ import scala.xml.PrettyPrinter
  */
 class NetworkIpFilter(context: Context, AllowedHttpIpList: List[String]) extends Filter(context) {
 
+    /**
+     * List of regular expressions that IP address should match.  Separating '.' for IPv4 or ':' for IPv6.
+     */
     private val regExList: List[String] = {
-        AllowedHttpIpList.map(a => a.replace('.', ' ').replace("*", ".*"))
+        AllowedHttpIpList.map(a => a.replace('.', ' ').replace(':', ' ').replace("*", ".*"))
     }
 
+    /**
+     * Return true if the address is allowed.
+     */
     private def allow(ipAddress: String): Boolean = {
         if (ipAddress == null) false
         else {
-            val clientIp = ipAddress.replace('.', ' ')
-            regExList.filter(regEx => clientIp.matches(regEx)).size > 0
+            val clientIp = ipAddress.replace('.', ' ').replace(':', ' ')
+            regExList.find(regEx => clientIp.matches(regEx)).isDefined
         }
     }
 
