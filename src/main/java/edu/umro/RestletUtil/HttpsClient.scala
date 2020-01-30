@@ -14,6 +14,7 @@ import org.restlet.ext.html.FormDataSet
 import org.restlet.ext.html.FormData
 import org.restlet.data.Form
 import com.sun.org.apache.bcel.internal.generic.FMUL
+import edu.umro.ScalaUtil.Trace
 
 /**
  * Client support for HTTPS and HTTP.
@@ -34,8 +35,17 @@ object HttpsClient {
    *
    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
    */
-  def httpsGet(url: String, userId: String = "", password: String = "", challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC): Either[ResourceException, Representation] = {
-    val clientResource = new ClientResource(url)
+  def httpsGet(url: String, userId: String = "", password: String = "", challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC, trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
+
+    val clientResource = {
+      if (trustKnownCertificates) {
+        val clientContext = new org.restlet.Context
+        clientContext.getAttributes.put("sslContextFactory", new TrustingSslContextFactory)
+        new ClientResource(clientContext, url)
+      } else new ClientResource(url)
+
+    }
+
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     try {
@@ -244,7 +254,7 @@ object HttpsClient {
   //    println("status: " + status)
   //  }
 
-  def main(args: Array[String]): Unit = { // TODO rm
+  def main3(args: Array[String]): Unit = { // TODO rm
     val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
     val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
     val file3 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_a.zip""")
@@ -273,6 +283,17 @@ object HttpsClient {
     //val status = httpsPostZipFile("http://localhost/run/BBbyCBCT_6", file, "userid", "password")
     val status = httpsPostMultipleFilesAsMulipartForm("http://localhost/run/BBbyCBCT_6/?Runny=yeah", fileList, MediaType.TEXT_PLAIN, "userid", "password")
     println("status: " + status)
+  }
+
+  def main(args: Array[String]): Unit = { // TODO rm
+    val url = "https://uhroappwebsdv1.umhs.med.umich.edu:8111/GetSeries?PatientID=MQATX4OBIQA2019Q3"
+    val status = httpsGet(url, "irrer", "45eetslp", ChallengeScheme.HTTP_BASIC, true)
+    Trace.trace("status: " + status)
+    if (status.isRight) {
+      val rep = status.right.get
+      Trace.trace(rep)
+      Trace.trace(rep.getText)
+    }
   }
 
 }
