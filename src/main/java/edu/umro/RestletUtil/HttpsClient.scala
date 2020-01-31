@@ -25,7 +25,24 @@ import edu.umro.ScalaUtil.Trace
 object HttpsClient {
 
   /**
-   * Fetch content via HTTPS or HTTP.
+   * Establish the client resource, setting up the certificate trust model as the caller specified.
+   *
+   * @param url: URL of service
+   *
+   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+   * function. Defaults to false.
+   */
+  private def getClientResource(url: String, trustKnownCertificates: Boolean) = {
+    if (trustKnownCertificates) {
+      val clientContext = new org.restlet.Context
+      clientContext.getAttributes.put("sslContextFactory", new TrustingSslContextFactory)
+      new ClientResource(clientContext, url)
+    } else new ClientResource(url)
+  }
+
+  /**
+   * Fetch content via HTTPS or HTTP.  If there is a security failure then
+   * a <code>CertificateException</code> is thrown.
    *
    * @param url: URL of service
    *
@@ -34,18 +51,18 @@ object HttpsClient {
    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
    *
    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
+   *
+   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+   * function. Defaults to false.
    */
-  def httpsGet(url: String, userId: String = "", password: String = "", challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC, trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
+  def httpsGet(
+    url: String,
+    userId: String = "",
+    password: String = "",
+    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
 
-    val clientResource = {
-      if (trustKnownCertificates) {
-        val clientContext = new org.restlet.Context
-        clientContext.getAttributes.put("sslContextFactory", new TrustingSslContextFactory)
-        new ClientResource(clientContext, url)
-      } else new ClientResource(url)
-
-    }
-
+    val clientResource = getClientResource(url, trustKnownCertificates)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     try {
@@ -69,9 +86,18 @@ object HttpsClient {
    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
    *
    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
+   *
+   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+   * function. Defaults to false.
    */
-  def httpsPost(url: String, data: Array[Byte], userId: String = "", password: String = "", challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC): Either[ResourceException, Representation] = {
-    val clientResource = new ClientResource(url)
+  def httpsPost(
+    url: String,
+    data: Array[Byte],
+    userId: String = "",
+    password: String = "",
+    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
+    val clientResource = getClientResource(url, trustKnownCertificates)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     try {
@@ -96,9 +122,18 @@ object HttpsClient {
    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
    *
    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
+   *
+   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+   * function. Defaults to false.
    */
-  def httpsPostZipFile(url: String, file: File, userId: String = "", password: String = "", challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC): Either[ResourceException, Representation] = {
-    val clientResource = new ClientResource(url)
+  def httpsPostZipFile(
+    url: String,
+    file: File,
+    userId: String = "",
+    password: String = "",
+    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
+    val clientResource = getClientResource(url, trustKnownCertificates)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     try {
@@ -125,9 +160,18 @@ object HttpsClient {
    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
    *
    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
+   *
+   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+   * function. Defaults to false.
    */
-  def httpsPostMulipartFormX(url: String, file: File, userId: String = "", password: String = "", challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC): Either[ResourceException, Representation] = {
-    val clientResource = new ClientResource(url)
+  def httpsPostMulipartFormX(
+    url: String,
+    file: File,
+    userId: String = "",
+    password: String = "",
+    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
+    val clientResource = getClientResource(url, trustKnownCertificates)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     try {
@@ -158,8 +202,18 @@ object HttpsClient {
    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
    *
    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
+   *
+   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+   * function. Defaults to false.
    */
-  def httpsPostSingleFileAsMulipartForm(url: String, file: File, fileMediaType: MediaType, userId: String = "", password: String = "", challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC): Either[ResourceException, Representation] = {
+  def httpsPostSingleFileAsMulipartForm(
+    url: String,
+    file: File,
+    fileMediaType: MediaType,
+    userId: String = "",
+    password: String = "",
+    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
     try {
 
       val entity = new FileRepresentation(file, fileMediaType) //create the fileRepresentation
@@ -168,7 +222,7 @@ object HttpsClient {
       fds.getEntries.add(new FormData("FileTag", entity))
       fds.setMultipart(true)
 
-      val clientResource = new ClientResource(url)
+      val clientResource = getClientResource(url, trustKnownCertificates)
       val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
       clientResource.setChallengeResponse(challengeResponse)
       //val representation = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
@@ -196,8 +250,17 @@ object HttpsClient {
    *
    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
    *
+   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+   * function. Defaults to false.
    */
-  def httpsPostMultipleFilesAsMulipartForm(url: String, fileList: Seq[File], fileMediaType: MediaType, userId: String = "", password: String = "", challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC): Either[ResourceException, Representation] = {
+  def httpsPostMultipleFilesAsMulipartForm(
+    url: String,
+    fileList: Seq[File],
+    fileMediaType: MediaType,
+    userId: String = "",
+    password: String = "",
+    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
     try {
 
       var inc = 1
@@ -209,7 +272,7 @@ object HttpsClient {
         fds.setMultipart(true)
       }
 
-      val clientResource = new ClientResource(url)
+      val clientResource = getClientResource(url, trustKnownCertificates)
       val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
       clientResource.setChallengeResponse(challengeResponse)
       val representation = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
@@ -221,40 +284,7 @@ object HttpsClient {
     }
   }
 
-  //  def formy(url: String, file: File, fileMediaType: MediaType, userId: String = "", password: String = "", challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC): Either[ResourceException, Representation] = {
-  //    try {
-  //
-  //      val entity = new FileRepresentation(file, fileMediaType) //create the fileRepresentation
-  //
-  //      val fds = new FormDataSet
-  //      fds.getEntries.add(new FormData("FileTag", entity))
-  //      fds.setMultipart(true)
-  //
-  //      val fileForm = new Form
-  //      fds.add("Run", "Run")
-  //
-  //      val clientResource = new ClientResource(url)
-  //      val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
-  //      clientResource.setChallengeResponse(challengeResponse)
-  //      //val representation = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
-  //      val representation = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
-  //      Right(representation)
-  //    } catch {
-  //      case re: ResourceException => {
-  //        Left(re)
-  //      }
-  //    }
-  //  }
-
-  //  def main1(args: Array[String]): Unit = { // TODO rm
-  //    val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
-  //    val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
-  //    val data = FileUtil.readBinaryFile(file2).right.get
-  //    val status = formy("http://localhost/run/BBbyCBCT_6?Run=Run", file2, MediaType.TEXT_PLAIN, "userid", "password")
-  //    println("status: " + status)
-  //  }
-
-  def main3(args: Array[String]): Unit = { // TODO rm
+  private def main3(args: Array[String]): Unit = { // TODO rm
     val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
     val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
     val file3 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_a.zip""")
@@ -275,7 +305,7 @@ object HttpsClient {
     println("status: " + status)
   }
 
-  def main2(args: Array[String]): Unit = { // TODO rm
+  private def main2(args: Array[String]): Unit = { // TODO rm
     val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
     val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
     val fileList = Seq(file1)
@@ -286,6 +316,10 @@ object HttpsClient {
   }
 
   def main(args: Array[String]): Unit = { // TODO rm
+
+    val fileList = new File("""D:\pf\eclipse\workspaceOxygen\aqaclient\src\main\resources\static\certificates""").listFiles
+    TrustKnownCertificates.init(fileList)
+
     val url = "https://uhroappwebsdv1.umhs.med.umich.edu:8111/GetSeries?PatientID=MQATX4OBIQA2019Q3"
     val status = httpsGet(url, "irrer", "45eetslp", ChallengeScheme.HTTP_BASIC, true)
     Trace.trace("status: " + status)
