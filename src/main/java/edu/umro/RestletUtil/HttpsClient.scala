@@ -32,12 +32,19 @@ object HttpsClient {
    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
    * function. Defaults to false.
    */
-  private def getClientResource(url: String, trustKnownCertificates: Boolean) = {
-    if (trustKnownCertificates) {
+  private def getClientResource(url: String, trustKnownCertificates: Boolean, parameterList: Map[String, String]) = {
+    val clientResource = if (trustKnownCertificates) {
       val clientContext = new org.restlet.Context
       clientContext.getAttributes.put("sslContextFactory", new TrustingSslContextFactory)
       new ClientResource(clientContext, url)
     } else new ClientResource(url)
+
+    if (parameterList.nonEmpty) {
+      val parameters = clientResource.getContext.getParameters
+      parameterList.keys.map(key => parameters.add(key, parameterList(key)))
+    }
+
+    clientResource
   }
 
   /**
@@ -60,9 +67,10 @@ object HttpsClient {
     userId: String = "",
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
+    trustKnownCertificates: Boolean = false,
+    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
 
-    val clientResource = getClientResource(url, trustKnownCertificates)
+    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     try {
@@ -96,8 +104,9 @@ object HttpsClient {
     userId: String = "",
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
-    val clientResource = getClientResource(url, trustKnownCertificates)
+    trustKnownCertificates: Boolean = false,
+    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
+    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     try {
@@ -132,8 +141,9 @@ object HttpsClient {
     userId: String = "",
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
-    val clientResource = getClientResource(url, trustKnownCertificates)
+    trustKnownCertificates: Boolean = false,
+    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
+    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     try {
@@ -170,8 +180,9 @@ object HttpsClient {
     userId: String = "",
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
-    val clientResource = getClientResource(url, trustKnownCertificates)
+    trustKnownCertificates: Boolean = false,
+    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
+    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     try {
@@ -213,7 +224,8 @@ object HttpsClient {
     userId: String = "",
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
+    trustKnownCertificates: Boolean = false,
+    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
     try {
 
       val entity = new FileRepresentation(file, fileMediaType) //create the fileRepresentation
@@ -222,7 +234,8 @@ object HttpsClient {
       fds.getEntries.add(new FormData("FileTag", entity))
       fds.setMultipart(true)
 
-      val clientResource = getClientResource(url, trustKnownCertificates)
+      val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
+
       val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
       clientResource.setChallengeResponse(challengeResponse)
       //val representation = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
@@ -260,7 +273,8 @@ object HttpsClient {
     userId: String = "",
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false): Either[ResourceException, Representation] = {
+    trustKnownCertificates: Boolean = false,
+    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
     try {
 
       var inc = 1
@@ -272,7 +286,7 @@ object HttpsClient {
         fds.setMultipart(true)
       }
 
-      val clientResource = getClientResource(url, trustKnownCertificates)
+      val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
       val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
       clientResource.setChallengeResponse(challengeResponse)
       val representation = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
