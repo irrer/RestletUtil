@@ -15,6 +15,12 @@ import org.restlet.ext.html.FormData
 import org.restlet.data.Form
 import com.sun.org.apache.bcel.internal.generic.FMUL
 import edu.umro.ScalaUtil.Trace
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+import java.util.concurrent.TimeUnit
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{ Failure, Success }
 
 /**
  * Client support for HTTPS and HTTP.
@@ -47,6 +53,21 @@ object HttpsClient {
     clientResource
   }
 
+  private def perform(op: () => Representation, timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
+    try {
+      if (timeout_ms.isDefined) {
+        val duration = Duration(timeout_ms.get, TimeUnit.MILLISECONDS)
+        val future = Future { op() }
+        val res = Await.result(future, duration)
+        Right(res)
+      } else Right(op())
+    } catch {
+      case t: Throwable => {
+        Left(t)
+      }
+    }
+  }
+
   /**
    * Fetch content via HTTPS or HTTP.  If there is a security failure then
    * a <code>CertificateException</code> is thrown.
@@ -68,18 +89,13 @@ object HttpsClient {
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
     trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
+    parameterList: Map[String, String] = Map(),
+    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
 
     val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
-    try {
-      Right(clientResource.get)
-    } catch {
-      case re: ResourceException => {
-        Left(re)
-      }
-    }
+    perform(clientResource.get _, timeout_ms)
   }
 
   /**
@@ -105,18 +121,14 @@ object HttpsClient {
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
     trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
+    parameterList: Map[String, String] = Map(),
+    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
     val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
-    try {
-      val representation = new ByteArrayRepresentation(data)
-      Right(clientResource.post(representation))
-    } catch {
-      case re: ResourceException => {
-        Left(re)
-      }
-    }
+    val representation = new ByteArrayRepresentation(data)
+    def op = clientResource.post(representation)
+    perform(op _, timeout_ms)
   }
 
   /**
@@ -142,20 +154,14 @@ object HttpsClient {
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
     trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
+    parameterList: Map[String, String] = Map(),
+    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
     val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
-    try {
-      val representation = new FileRepresentation(file, MediaType.APPLICATION_ZIP)
-      // val representation = new FileRepresentation(file, MediaType.APPLICATION_ALL)
-      //val representation = new FileRepresentation(file, MediaType.MULTIPART_FORM_DATA)
-      Right(clientResource.post(representation))
-    } catch {
-      case re: ResourceException => {
-        Left(re)
-      }
-    }
+    val representation = new FileRepresentation(file, MediaType.APPLICATION_ZIP)
+    def op = clientResource.post(representation)
+    perform(op _, timeout_ms)
   }
 
   /**
@@ -181,22 +187,14 @@ object HttpsClient {
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
     trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
+    parameterList: Map[String, String] = Map(),
+    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
     val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
-    try {
-      //      val data = Array[Byte]()
-      //      val jjjjj = new FileRepresentation(data, MediaType.MULTIPART_FORM_DATA)
-      val representation = new FileRepresentation(file, MediaType.MULTIPART_FORM_DATA)
-      // val representation = new FileRepresentation(file, MediaType.APPLICATION_ALL)
-      //val representation = new FileRepresentation(file, MediaType.MULTIPART_FORM_DATA)
-      Right(clientResource.post(representation))
-    } catch {
-      case re: ResourceException => {
-        Left(re)
-      }
-    }
+    val representation = new FileRepresentation(file, MediaType.MULTIPART_FORM_DATA)
+    def op = clientResource.post(representation)
+    perform(op _, timeout_ms)
   }
 
   /**
@@ -225,27 +223,23 @@ object HttpsClient {
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
     trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
-    try {
+    parameterList: Map[String, String] = Map(),
+    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
 
-      val entity = new FileRepresentation(file, fileMediaType) //create the fileRepresentation
+    val entity = new FileRepresentation(file, fileMediaType) //create the fileRepresentation
 
-      val fds = new FormDataSet
-      fds.getEntries.add(new FormData("FileTag", entity))
-      fds.setMultipart(true)
+    val fds = new FormDataSet
+    fds.getEntries.add(new FormData("FileTag", entity))
+    fds.setMultipart(true)
 
-      val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
+    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
 
-      val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
-      clientResource.setChallengeResponse(challengeResponse)
-      //val representation = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
-      val representation = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
-      Right(representation)
-    } catch {
-      case re: ResourceException => {
-        Left(re)
-      }
-    }
+    val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
+    clientResource.setChallengeResponse(challengeResponse)
+    //val representation = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
+
+    def op = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
+    perform(op _, timeout_ms)
   }
 
   /**
@@ -274,28 +268,24 @@ object HttpsClient {
     password: String = "",
     challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
     trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map()): Either[ResourceException, Representation] = {
-    try {
+    parameterList: Map[String, String] = Map(),
+    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
 
-      var inc = 1
-      val fds = new FormDataSet
-      for (file <- fileList) {
-        val entity = new FileRepresentation(file, fileMediaType) //create the fileRepresentation
-        fds.getEntries.add(new FormData("FileTag" + inc, entity))
-        inc = inc + 1
-        fds.setMultipart(true)
-      }
-
-      val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
-      val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
-      clientResource.setChallengeResponse(challengeResponse)
-      val representation = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
-      Right(representation)
-    } catch {
-      case re: ResourceException => {
-        Left(re)
-      }
+    var inc = 1
+    val fds = new FormDataSet
+    for (file <- fileList) {
+      val entity = new FileRepresentation(file, fileMediaType) //create the fileRepresentation
+      fds.getEntries.add(new FormData("FileTag" + inc, entity))
+      inc = inc + 1
+      fds.setMultipart(true)
     }
+
+    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
+    val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
+    clientResource.setChallengeResponse(challengeResponse)
+
+    def op = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
+    perform(op _, timeout_ms)
   }
 
   private def main3(args: Array[String]): Unit = { // TODO rm
@@ -331,16 +321,19 @@ object HttpsClient {
 
   def main(args: Array[String]): Unit = { // TODO rm
 
+    val start = System.currentTimeMillis
     val fileList = new File("""D:\pf\eclipse\workspaceOxygen\aqaclient\src\main\resources\static\certificates""").listFiles
     TrustKnownCertificates.init(fileList)
 
     val url = "https://uhroappwebsdv1.umhs.med.umich.edu:8111/GetSeries?PatientID=MQATX4OBIQA2019Q3"
-    val status = httpsGet(url, "irrer", "45eetslp", ChallengeScheme.HTTP_BASIC, true)
+    val status = httpsGet(url, "irrer", "45eetslp", ChallengeScheme.HTTP_BASIC, true, timeout_ms = Some(20000.toLong))
+    val elapsed = System.currentTimeMillis - start
     Trace.trace("status: " + status)
     if (status.isRight) {
       val rep = status.right.get
       Trace.trace(rep)
       Trace.trace(rep.getText)
+      Trace.trace("success.  Elapsed time in ms: " + elapsed)
     }
   }
 
