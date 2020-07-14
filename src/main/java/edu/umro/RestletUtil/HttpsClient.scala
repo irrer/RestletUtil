@@ -82,6 +82,8 @@ object HttpsClient {
    *
    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
    * function. Defaults to false.
+   *
+   * @param timeout_ms: If defined, timeout after this many ms.
    */
   def httpsGet(
     url: String,
@@ -113,6 +115,8 @@ object HttpsClient {
    *
    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
    * function. Defaults to false.
+   *
+   * @param timeout_ms: If defined, timeout after this many ms.
    */
   def httpsPost(
     url: String,
@@ -146,6 +150,8 @@ object HttpsClient {
    *
    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
    * function. Defaults to false.
+   *
+   * @param timeout_ms: If defined, timeout after this many ms.
    */
   def httpsPostZipFile(
     url: String,
@@ -179,6 +185,8 @@ object HttpsClient {
    *
    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
    * function. Defaults to false.
+   *
+   * @param timeout_ms: If defined, timeout after this many ms.
    */
   def httpsPostMulipartFormX(
     url: String,
@@ -214,6 +222,8 @@ object HttpsClient {
    *
    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
    * function. Defaults to false.
+   *
+   * @param timeout_ms: If defined, timeout after this many ms.
    */
   def httpsPostSingleFileAsMulipartForm(
     url: String,
@@ -259,6 +269,8 @@ object HttpsClient {
    *
    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
    * function. Defaults to false.
+   *
+   * @param timeout_ms: If defined, timeout after this many ms.
    */
   def httpsPostMultipleFilesAsMulipartForm(
     url: String,
