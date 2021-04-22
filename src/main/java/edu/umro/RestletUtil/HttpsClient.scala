@@ -326,7 +326,7 @@ object HttpsClient {
     println("status: " + status)
   }
 
-  if (false) {
+  if (false) { // eliminate compiler warnings
     val j0 = main2 _
     val j1 = main3 _
   }
@@ -334,11 +334,15 @@ object HttpsClient {
   def main(args: Array[String]): Unit = { // TODO rm
 
     val start = System.currentTimeMillis
-    val fileList = new File("""D:\pf\eclipse\workspaceOxygen\aqaclient\src\main\resources\static\certificates""").listFiles
+    // val fileList = new File("""D:\pf\eclipse\workspaceOxygen\aqaclient\src\main\resources\static\certificates""").listFiles
+    val fileList = new File("""\\hitspr\e$\Program Files\UMRO\AQAAWSClient\AQAClient-0.0.2\static\certificates""").listFiles
+    println("fileList: " + fileList.map(_.getName).mkString("\n"))
     TrustKnownCertificates.init(fileList)
 
-    val url = "https://uhroappwebsdv1.umhs.med.umich.edu:8111/GetSeries?PatientID=MQATX4OBIQA2019Q3"
-    val status = httpsGet(url, "irrer", "45eetslp", ChallengeScheme.HTTP_BASIC, trustKnownCertificates = true, timeout_ms = Some(20000.toLong))
+    // val url = "https://uhroappwebsdv1.umhs.med.umich.edu:8111/GetSeries?PatientID=MQATX4OBIQA2019Q3"
+    val url = """https://automatedqualityassurance.org/GetSeries?PatientID=$AQA_TB3"""
+    // val status = httpsGet(url, "irrer", "45eetslp", ChallengeScheme.HTTP_BASIC, trustKnownCertificates = true, timeout_ms = Some(20000.toLong))
+    val status = httpsGet(url, "irrer", "23eetslp", ChallengeScheme.HTTP_BASIC, trustKnownCertificates = true, timeout_ms = Some(20000.toLong))
     val elapsed = System.currentTimeMillis - start
     Trace.trace("status: " + status)
     if (status.isRight) {

@@ -41,12 +41,10 @@ class TrustKnownCertificates extends X509TrustManager {
         val ok = knownCertList.exists(c => java.util.Arrays.equals(c.getEncoded, encoded))
         ok
       }
+      val trust = certTrusted(chain.head)
 
-      val trustStatusList = chain.map(cert => (certTrusted(cert), cert))
-      val trustEntireChain = trustStatusList.map(tc => tc._1).reduce(_ && _)
-
-      if (!trustEntireChain)
-        throw new CertificateException("Untrusted certificate(s) found: " + trustStatusList.filterNot(_._1).map(tc => tc._2.toString).mkString("\n\n"))
+      if (!trust)
+        throw new CertificateException("Untrusted certificate (first in chain):\n\n" + chain.head.toString)
     }
   }
 
@@ -113,6 +111,7 @@ object TrustKnownCertificates {
       .map(c => c._2.head.asInstanceOf[X509Certificate])
       . // find distinct and take one of each
       foreach(cert => configuredCertsBuffer.append(cert)) // save in list
+    println(configuredCertsBuffer.mkString("\n=====================================================\n"))
   }
 
 }
