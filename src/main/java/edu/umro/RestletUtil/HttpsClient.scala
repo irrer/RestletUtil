@@ -9,8 +9,8 @@ import org.restlet.resource.ClientResource
 import java.io.File
 import java.util.concurrent.TimeUnit
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
 /**
   * Client support for HTTPS and HTTP.
@@ -52,9 +52,8 @@ object HttpsClient {
         Right(res)
       } else Right(op())
     } catch {
-      case t: Throwable => {
+      case t: Throwable =>
         Left(t)
-      }
     }
   }
 
@@ -132,7 +131,7 @@ object HttpsClient {
     *
     * @param url: URL of service
     *
-    * @param data: Content to post
+    * @param file: Content to post
     *
     * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
     *
@@ -168,7 +167,7 @@ object HttpsClient {
     *
     * @param url: URL of service
     *
-    * @param data: Content to post
+    * @param file: Content to post
     *
     * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
     *
@@ -298,33 +297,38 @@ object HttpsClient {
 
   private def main3(args: Array[String]): Unit = { // TODO rm
     val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
-    val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
+    // val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
     val file3 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_a.zip""")
-    val data = FileUtil.readBinaryFile(file1).right.get
+    // val data = FileUtil.readBinaryFile(file1).right.get
     //val status = httpsPostSingleFileAsMulipartForm("http://localhost/run/BBbyCBCT_6", file1, MediaType.APPLICATION_ALL, "userid", "password")
     //val status = httpsPostSingleFileAsMulipartForm("http://localhost/run/BBbyCBCT_6", file1, MediaType.APPLICATION_ZIP, "userid", "password")
     val status = httpsPostSingleFileAsMulipartForm("http://localhost/run/BBbyCBCT_6?Run=Run", file3, MediaType.APPLICATION_ZIP, "userid", "password")
     status match {
       case Left(ex) => println("Resource exception: " + ex)
-      case Right(rep) => {
+      case Right(rep) =>
         println("Representation: " + rep)
         val baos = new java.io.ByteArrayOutputStream
         FileUtil.copyStream(rep.getStream, baos)
         val text = new String(baos.toByteArray)
         println("Return text: " + text)
-      }
     }
     println("status: " + status)
   }
 
   private def main2(args: Array[String]): Unit = { // TODO rm
     val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
-    val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
+    // val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
+    if (false) println(args.mkString(""))
     val fileList = Seq(file1)
     //val status = httpsPost("http://localhost/run/BBbyCBCT_6", data, "userid", "password")
     //val status = httpsPostZipFile("http://localhost/run/BBbyCBCT_6", file, "userid", "password")
     val status = httpsPostMultipleFilesAsMulipartForm("http://localhost/run/BBbyCBCT_6/?Runny=yeah", fileList, MediaType.TEXT_PLAIN, "userid", "password")
     println("status: " + status)
+  }
+
+  if (false) {
+    val j0 = main2 _
+    val j1 = main3 _
   }
 
   def main(args: Array[String]): Unit = { // TODO rm
@@ -334,7 +338,7 @@ object HttpsClient {
     TrustKnownCertificates.init(fileList)
 
     val url = "https://uhroappwebsdv1.umhs.med.umich.edu:8111/GetSeries?PatientID=MQATX4OBIQA2019Q3"
-    val status = httpsGet(url, "irrer", "45eetslp", ChallengeScheme.HTTP_BASIC, true, timeout_ms = Some(20000.toLong))
+    val status = httpsGet(url, "irrer", "45eetslp", ChallengeScheme.HTTP_BASIC, trustKnownCertificates = true, timeout_ms = Some(20000.toLong))
     val elapsed = System.currentTimeMillis - start
     Trace.trace("status: " + status)
     if (status.isRight) {

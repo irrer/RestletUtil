@@ -1,7 +1,7 @@
 package edu.umro.RestletUtil
 
-import org.restlet.{Context, Request, Response, Restlet}
 import org.restlet.routing.Filter
+import org.restlet.{Context, Request, Response, Restlet}
 
 import java.util.Date
 

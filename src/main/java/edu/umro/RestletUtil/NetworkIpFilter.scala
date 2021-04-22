@@ -1,8 +1,8 @@
 package edu.umro.RestletUtil
 
-import org.restlet.{Context, Request, Response}
 import org.restlet.data.{MediaType, Status}
 import org.restlet.routing.Filter
+import org.restlet.{Context, Request, Response}
 
 import scala.xml.PrettyPrinter
 
@@ -25,7 +25,7 @@ class NetworkIpFilter(context: Context, AllowedHttpIpList: List[String]) extends
     if (ipAddress == null) false
     else {
       val clientIp = ipAddress.replace('.', ' ').replace(':', ' ')
-      regExList.find(regEx => clientIp.matches(regEx)).isDefined
+      regExList.exists(regEx => clientIp.matches(regEx))
     }
   }
 

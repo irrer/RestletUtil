@@ -21,9 +21,7 @@ import javax.net.ssl.{SSLContext, TrustManager, X509TrustManager}
   */
 class TrustKnownCertificates extends X509TrustManager {
 
-  private val noCerts = Array[X509Certificate]()
-
-  override def checkClientTrusted(chain: Array[X509Certificate], authType: String) = {}
+  override def checkClientTrusted(chain: Array[X509Certificate], authType: String): Unit = {}
 
   /**
     * Throw CertificateException if any member of the incoming certificate chain is not trusted.
@@ -33,14 +31,14 @@ class TrustKnownCertificates extends X509TrustManager {
     * in the middle attacks), but in special cases (such as talking to a server that is local to
     * the machine) it can be ok.
     */
-  override def checkServerTrusted(chain: Array[X509Certificate], authType: String) = {
+  override def checkServerTrusted(chain: Array[X509Certificate], authType: String): Unit = {
 
     val knownCertList = TrustKnownCertificates.knownCerts
 
     if (knownCertList.nonEmpty) {
       def certTrusted(cert: X509Certificate) = {
         val encoded = cert.getEncoded
-        val ok = knownCertList.find(c => java.util.Arrays.equals(c.getEncoded, encoded)).isDefined
+        val ok = knownCertList.exists(c => java.util.Arrays.equals(c.getEncoded, encoded))
         ok
       }
 
@@ -52,15 +50,15 @@ class TrustKnownCertificates extends X509TrustManager {
     }
   }
 
-  override def getAcceptedIssuers = TrustKnownCertificates.knownCerts
+  override def getAcceptedIssuers: Array[X509Certificate] = TrustKnownCertificates.knownCerts
 }
 
 class TrustingSslContextFactory extends DefaultSslContextFactory {
   override def createSslContext: SSLContext = {
-    val sslContext = SSLContext.getInstance("TLS");
+    val sslContext = SSLContext.getInstance("TLS")
     val tm = Array[TrustManager](new TrustKnownCertificates)
-    sslContext.init(null, tm, null);
-    createWrapper(sslContext);
+    sslContext.init(null, tm, null)
+    createWrapper(sslContext)
   }
 }
 
@@ -68,7 +66,7 @@ object TrustKnownCertificates {
 
   private val endCert = "-----END CERTIFICATE-----"
 
-  val certFactory = CertificateFactory.getInstance("X.509")
+  val certFactory: CertificateFactory = CertificateFactory.getInstance("X.509")
 
   private def certFileToInputStreamList(file: File): Seq[InputStream] = {
 
@@ -86,16 +84,6 @@ object TrustKnownCertificates {
     }
   }
 
-  private def readCert(file: File): Option[Certificate] = {
-    try {
-      val fis = new FileInputStream(file)
-      val cert = certFactory.generateCertificate(fis) //.asInstanceOf[X509Certificate]
-      Some(cert)
-    } catch {
-      case t: Throwable => None
-    }
-  }
-
   /**
     * mutable local place to keep certificates
     */
@@ -104,30 +92,27 @@ object TrustKnownCertificates {
   /**
     * Provide read-only access to configured certs.
     */
-  def knownCerts = configuredCertsBuffer.toList.toArray
+  def knownCerts: Array[X509Certificate] = configuredCertsBuffer.toList.toArray
 
   private def inStreamToCert(inStream: InputStream): Option[Certificate] = {
     try {
       Some(certFactory.generateCertificate(inStream))
     } catch {
-      case t: Throwable => None
+      case _: Throwable => None
     }
   }
 
-  def init(fileList: Seq[File]) = {
+  def init(fileList: Seq[File]): Unit = {
     configuredCertsBuffer.clear
     //fileList.map(f => readCert(f)).flatten.groupBy(_.getPublicKey.toString).map(c => c._2.head.asInstanceOf[X509Certificate])
-    val j = fileList
-      .map(f => certFileToInputStreamList(f))
-      .flatten
-      . // get readable content from files, discard the bad ones
-      map(inStream => inStreamToCert(inStream))
-      .flatten
+    fileList
+      .flatMap(f => certFileToInputStreamList(f))
+      .flatMap(inStream => inStreamToCert(inStream))
       . // convert each stream to certificate, discard the bad ones
       groupBy(_.getPublicKey.toString)
       .map(c => c._2.head.asInstanceOf[X509Certificate])
       . // find distinct and take one of each
-      map(cert => configuredCertsBuffer.append(cert.asInstanceOf[X509Certificate])) // save in list
+      foreach(cert => configuredCertsBuffer.append(cert)) // save in list
   }
 
 }

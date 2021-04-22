@@ -49,7 +49,7 @@ class CachedSecretVerifier(actualVerify: (String, Array[Char]) => Boolean, expir
   /**
     * Remove any users whose logins have expired.
     */
-  def removeExpiredEntries: Unit = history.synchronized(clean)
+  def removeExpiredEntries(): Unit = history.synchronized(clean)
 
   /**
     * Called by super class to validate user.  May be called multiple times for
@@ -58,7 +58,7 @@ class CachedSecretVerifier(actualVerify: (String, Array[Char]) => Boolean, expir
   override def verify(userId: String, secret: Array[Char]): Int = {
     history.synchronized({
       clean
-      if (history.get(userId).isDefined) Verifier.RESULT_VALID
+      if (history.contains(userId)) Verifier.RESULT_VALID
       else doVerify(userId, secret)
     })
   }

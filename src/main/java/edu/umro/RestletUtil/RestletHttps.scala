@@ -12,20 +12,11 @@ import java.security.KeyStore
   */
 object RestletHttps {
 
-  private def fileOfProperty(key: String): Option[File] = {
-    val fileName = System.getProperties.getProperty(key)
-    if (fileName != null) {
-      val file = new File(fileName)
-      if (file.canRead) Some(file)
-      else None
-    } else None
-  }
-
   private def standardKeystoreFileNameList: List[String] = {
     val javaHome = System.getenv("JAVA_HOME")
     if (javaHome != null) {
       val stdNameList = List("/lib/security/jssecacerts", "/lib/security/cacerts")
-      stdNameList.map(name => javaHome + (name.replace("/", File.separator)))
+      stdNameList.map(name => javaHome + name.replace("/", File.separator))
     } else List[String]()
   }
 
@@ -39,7 +30,7 @@ object RestletHttps {
   }
 
   def standardKeystoreFileList: List[File] = {
-    (umroKeystoreFileNameList ++ standardKeystoreFileNameList ++ propertiesKeystoreFileNameList).map(name => new File(name)).filter(file => file.canRead())
+    (umroKeystoreFileNameList ++ standardKeystoreFileNameList ++ propertiesKeystoreFileNameList).map(name => new File(name)).filter(file => file.canRead)
   }
 
   def standardPasswordList: List[String] = {
@@ -59,12 +50,11 @@ object RestletHttps {
         {
           try {
             val ks = KeyStore.getInstance(keystoreType)
-            ks.load(fileInputStream, password.toCharArray);
+            ks.load(fileInputStream, password.toCharArray)
             Right(ks)
           } catch {
-            case e: Exception => {
+            case e: Exception =>
               Left(e.getMessage)
-            }
           }
         }
       }
@@ -83,13 +73,13 @@ object RestletHttps {
           //text.append("\n    alias: " + alias + " : " + keyStore.getEntry(alias, null))
         }
       } catch {
-        case e: Exception => ;
+        case _: Exception =>
       }
       text.toString
     }
 
     override def toString: String = {
-      val lengthToShow = if (password.length > 16) 4 else (password.length / 4)
+      val lengthToShow = if (password.length > 16) 4 else password.length / 4
       "file: " + keyStoreFile.getAbsolutePath + "    type: " + keystoreType + "    password begins with: " + password.subSequence(0, lengthToShow)
     }
   }
@@ -106,15 +96,15 @@ object RestletHttps {
   private def setup(component: Component, httpsPort: Int, fileList: List[File], passwordList: List[String]): Either[String, KeystorePassword] = {
     val ks = findKeystore(fileList, passwordList)
     if (ks.isDefined) {
-      val server = component.getServers().add(Protocol.HTTPS, httpsPort)
-      val parameters = server.getContext().getParameters()
+      val server = component.getServers.add(Protocol.HTTPS, httpsPort)
+      val parameters = server.getContext.getParameters
       parameters.add("sslContextFactory", "org.restlet.engine.ssl.DefaultSslContextFactory")
       parameters.add("keyStorePath", ks.get.keyStoreFile.getAbsolutePath)
       parameters.add("keyStorePassword", ks.get.password)
       parameters.add("keyPassword", ks.get.password)
       parameters.add("keyStoreType", ks.get.keystoreType)
       Right(ks.get)
-    } else Left("Could not find keystore/password combination in this list of files:" + (fileList.foldLeft("")((t, f) => t + "\n    " + f.getAbsolutePath)))
+    } else Left("Could not find keystore/password combination in this list of files:" + fileList.foldLeft("")((t, f) => t + "\n    " + f.getAbsolutePath))
   }
 
   /**
@@ -136,14 +126,14 @@ object RestletHttps {
     */
   def addHttps(component: Component, httpPort: Int, fileList: List[File], passwordList: List[String]): Either[String, KeystorePassword] = {
     // Add system standard keystore file locations
-    val fList = (fileList ++ standardKeystoreFileList).distinct.filter(f => f.canRead()) // cull list by removing duplicates and require readability
+    val fList = (fileList ++ standardKeystoreFileList).distinct.filter(f => f.canRead) // cull list by removing duplicates and require readability
 
     val pwList = passwordList ++ standardPasswordList // Add system standard password sources
 
     0 match {
-      case _ if (fList.isEmpty)  => Left("No files found to use for keystore")
-      case _ if (pwList.isEmpty) => Left("No passwords given to use for keystore")
-      case _                     => setup(component, httpPort, fList, pwList)
+      case _ if fList.isEmpty  => Left("No files found to use for keystore")
+      case _ if pwList.isEmpty => Left("No passwords given to use for keystore")
+      case _                   => setup(component, httpPort, fList, pwList)
     }
 
   }
