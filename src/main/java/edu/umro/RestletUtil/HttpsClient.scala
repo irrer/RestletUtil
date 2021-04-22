@@ -1,43 +1,33 @@
 package edu.umro.RestletUtil
 
+import edu.umro.ScalaUtil.{FileUtil, Trace}
+import org.restlet.data.{ChallengeResponse, ChallengeScheme, MediaType}
+import org.restlet.ext.html.{FormData, FormDataSet}
+import org.restlet.representation.{ByteArrayRepresentation, FileRepresentation, Representation}
 import org.restlet.resource.ClientResource
-import org.restlet.data.ChallengeResponse
-import org.restlet.data.ChallengeScheme
-import org.restlet.resource.ResourceException
-import org.restlet.representation.Representation
-import org.restlet.representation.ByteArrayRepresentation
+
 import java.io.File
-import org.restlet.representation.FileRepresentation
-import org.restlet.data.MediaType
-import edu.umro.ScalaUtil.FileUtil
-import org.restlet.ext.html.FormDataSet
-import org.restlet.ext.html.FormData
-import org.restlet.data.Form
-import com.sun.org.apache.bcel.internal.generic.FMUL
-import edu.umro.ScalaUtil.Trace
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{ Failure, Success }
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.Duration
 
 /**
- * Client support for HTTPS and HTTP.
- *
- * While these functions can be useful, they are relatively trivial and somewhat constrictive.  Their most
- * frequent could very well be to to serve as examples of how to call a web server.
- */
+  * Client support for HTTPS and HTTP.
+  *
+  * While these functions can be useful, they are relatively trivial and somewhat constrictive.  Their most
+  * frequent could very well be to to serve as examples of how to call a web server.
+  */
 object HttpsClient {
 
   /**
-   * Establish the client resource, setting up the certificate trust model as the caller specified.
-   *
-   * @param url: URL of service
-   *
-   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-   * function. Defaults to false.
-   */
+    * Establish the client resource, setting up the certificate trust model as the caller specified.
+    *
+    * @param url: URL of service
+    *
+    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+    * function. Defaults to false.
+    */
   private def getClientResource(url: String, trustKnownCertificates: Boolean, parameterList: Map[String, String]) = {
     val clientResource = if (trustKnownCertificates) {
       val clientContext = new org.restlet.Context
@@ -69,30 +59,31 @@ object HttpsClient {
   }
 
   /**
-   * Fetch content via HTTPS or HTTP.  If there is a security failure then
-   * a <code>CertificateException</code> is thrown.
-   *
-   * @param url: URL of service
-   *
-   * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-   *
-   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-   * function. Defaults to false.
-   *
-   * @param timeout_ms: If defined, timeout after this many ms.
-   */
+    * Fetch content via HTTPS or HTTP.  If there is a security failure then
+    * a <code>CertificateException</code> is thrown.
+    *
+    * @param url: URL of service
+    *
+    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
+    *
+    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+    * function. Defaults to false.
+    *
+    * @param timeout_ms: If defined, timeout after this many ms.
+    */
   def httpsGet(
-    url: String,
-    userId: String = "",
-    password: String = "",
-    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map(),
-    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
+      url: String,
+      userId: String = "",
+      password: String = "",
+      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+      trustKnownCertificates: Boolean = false,
+      parameterList: Map[String, String] = Map(),
+      timeout_ms: Option[Long] = None
+  ): Either[Throwable, Representation] = {
 
     val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
@@ -101,32 +92,33 @@ object HttpsClient {
   }
 
   /**
-   * Post content via HTTPS or HTTP.
-   *
-   * @param url: URL of service
-   *
-   * @param data: Content to post
-   *
-   * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-   *
-   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-   * function. Defaults to false.
-   *
-   * @param timeout_ms: If defined, timeout after this many ms.
-   */
+    * Post content via HTTPS or HTTP.
+    *
+    * @param url: URL of service
+    *
+    * @param data: Content to post
+    *
+    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
+    *
+    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+    * function. Defaults to false.
+    *
+    * @param timeout_ms: If defined, timeout after this many ms.
+    */
   def httpsPost(
-    url: String,
-    data: Array[Byte],
-    userId: String = "",
-    password: String = "",
-    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map(),
-    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
+      url: String,
+      data: Array[Byte],
+      userId: String = "",
+      password: String = "",
+      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+      trustKnownCertificates: Boolean = false,
+      parameterList: Map[String, String] = Map(),
+      timeout_ms: Option[Long] = None
+  ): Either[Throwable, Representation] = {
     val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
@@ -136,32 +128,33 @@ object HttpsClient {
   }
 
   /**
-   * Post content via HTTPS or HTTP.
-   *
-   * @param url: URL of service
-   *
-   * @param data: Content to post
-   *
-   * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-   *
-   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-   * function. Defaults to false.
-   *
-   * @param timeout_ms: If defined, timeout after this many ms.
-   */
+    * Post content via HTTPS or HTTP.
+    *
+    * @param url: URL of service
+    *
+    * @param data: Content to post
+    *
+    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
+    *
+    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+    * function. Defaults to false.
+    *
+    * @param timeout_ms: If defined, timeout after this many ms.
+    */
   def httpsPostZipFile(
-    url: String,
-    file: File,
-    userId: String = "",
-    password: String = "",
-    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map(),
-    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
+      url: String,
+      file: File,
+      userId: String = "",
+      password: String = "",
+      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+      trustKnownCertificates: Boolean = false,
+      parameterList: Map[String, String] = Map(),
+      timeout_ms: Option[Long] = None
+  ): Either[Throwable, Representation] = {
     val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
@@ -171,32 +164,33 @@ object HttpsClient {
   }
 
   /**
-   * Post content via HTTPS or HTTP.
-   *
-   * @param url: URL of service
-   *
-   * @param data: Content to post
-   *
-   * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-   *
-   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-   * function. Defaults to false.
-   *
-   * @param timeout_ms: If defined, timeout after this many ms.
-   */
+    * Post content via HTTPS or HTTP.
+    *
+    * @param url: URL of service
+    *
+    * @param data: Content to post
+    *
+    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
+    *
+    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+    * function. Defaults to false.
+    *
+    * @param timeout_ms: If defined, timeout after this many ms.
+    */
   def httpsPostMulipartFormX(
-    url: String,
-    file: File,
-    userId: String = "",
-    password: String = "",
-    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map(),
-    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
+      url: String,
+      file: File,
+      userId: String = "",
+      password: String = "",
+      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+      trustKnownCertificates: Boolean = false,
+      parameterList: Map[String, String] = Map(),
+      timeout_ms: Option[Long] = None
+  ): Either[Throwable, Representation] = {
     val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
@@ -206,35 +200,36 @@ object HttpsClient {
   }
 
   /**
-   * Post a files as a form set data.
-   *
-   * @param url post to here
-   *
-   * @param file Post this file
-   *
-   * @param fileMediaType Media type (zip, xml, etc).
-   *
-   * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-   *
-   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-   * function. Defaults to false.
-   *
-   * @param timeout_ms: If defined, timeout after this many ms.
-   */
+    * Post a files as a form set data.
+    *
+    * @param url post to here
+    *
+    * @param file Post this file
+    *
+    * @param fileMediaType Media type (zip, xml, etc).
+    *
+    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
+    *
+    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+    * function. Defaults to false.
+    *
+    * @param timeout_ms: If defined, timeout after this many ms.
+    */
   def httpsPostSingleFileAsMulipartForm(
-    url: String,
-    file: File,
-    fileMediaType: MediaType,
-    userId: String = "",
-    password: String = "",
-    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map(),
-    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
+      url: String,
+      file: File,
+      fileMediaType: MediaType,
+      userId: String = "",
+      password: String = "",
+      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+      trustKnownCertificates: Boolean = false,
+      parameterList: Map[String, String] = Map(),
+      timeout_ms: Option[Long] = None
+  ): Either[Throwable, Representation] = {
 
     val entity = new FileRepresentation(file, fileMediaType) //create the fileRepresentation
 
@@ -253,35 +248,36 @@ object HttpsClient {
   }
 
   /**
-   * Post multiple files as form set data.
-   *
-   * @param url post to here
-   *
-   * @param fileList Post these files in this order
-   *
-   * @param fileMediaType Media type (same for all files).  If the files do not have all the same media type, then this function will not work.
-   *
-   * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-   *
-   * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-   *
-   * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-   * function. Defaults to false.
-   *
-   * @param timeout_ms: If defined, timeout after this many ms.
-   */
+    * Post multiple files as form set data.
+    *
+    * @param url post to here
+    *
+    * @param fileList Post these files in this order
+    *
+    * @param fileMediaType Media type (same for all files).  If the files do not have all the same media type, then this function will not work.
+    *
+    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
+    *
+    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
+    *
+    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+    * function. Defaults to false.
+    *
+    * @param timeout_ms: If defined, timeout after this many ms.
+    */
   def httpsPostMultipleFilesAsMulipartForm(
-    url: String,
-    fileList: Seq[File],
-    fileMediaType: MediaType,
-    userId: String = "",
-    password: String = "",
-    challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-    trustKnownCertificates: Boolean = false,
-    parameterList: Map[String, String] = Map(),
-    timeout_ms: Option[Long] = None): Either[Throwable, Representation] = {
+      url: String,
+      fileList: Seq[File],
+      fileMediaType: MediaType,
+      userId: String = "",
+      password: String = "",
+      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
+      trustKnownCertificates: Boolean = false,
+      parameterList: Map[String, String] = Map(),
+      timeout_ms: Option[Long] = None
+  ): Either[Throwable, Representation] = {
 
     var inc = 1
     val fds = new FormDataSet
