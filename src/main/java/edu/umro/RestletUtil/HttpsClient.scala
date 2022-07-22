@@ -322,6 +322,15 @@ object HttpsClient {
     perform(op _, timeout_ms)
   }
 
+  /**
+   * Authenticate via cookies.
+   * @param url URL of login page.
+   * @param usernameTag Name of parameter specifying user name.
+   * @param username User name.
+   * @param passwordTag Name of parameter specifying password.
+   * @param password Password.
+   * @return List of cookies to be used in subsequent HTTP calls.
+   */
   def AuthenticateViaCookies(url: String, usernameTag: String, username: String, passwordTag: String, password: String): Seq[Cookie] = {
     val clientContext = new org.restlet.Context
     clientContext.getAttributes.put("sslContextFactory", new TrustingSslContextFactory)
