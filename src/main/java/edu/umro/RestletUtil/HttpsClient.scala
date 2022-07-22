@@ -17,9 +17,9 @@
 package edu.umro.RestletUtil
 
 import edu.umro.ScalaUtil.{FileUtil, Trace}
-import org.restlet.data.{ChallengeResponse, ChallengeScheme, MediaType}
+import org.restlet.data.{ChallengeResponse, ChallengeScheme, Cookie, Form, MediaType}
 import org.restlet.ext.html.{FormData, FormDataSet}
-import org.restlet.representation.{ByteArrayRepresentation, FileRepresentation, Representation}
+import org.restlet.representation.{ByteArrayRepresentation, FileRepresentation, Representation, StringRepresentation}
 import org.restlet.resource.ClientResource
 
 import java.io.File
@@ -44,7 +44,7 @@ object HttpsClient {
     * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
     * function. Defaults to false.
     */
-  private def getClientResource(url: String, trustKnownCertificates: Boolean, parameterList: Map[String, String]) = {
+  private def getClientResource(url: String, trustKnownCertificates: Boolean, parameterList: Map[String, String], cookieList: Seq[Cookie]) = {
     val clientResource = if (trustKnownCertificates) {
       val clientContext = new org.restlet.Context
       clientContext.getAttributes.put("sslContextFactory", new TrustingSslContextFactory)
@@ -56,6 +56,11 @@ object HttpsClient {
       parameterList.keys.map(key => parameters.add(key, parameterList(key)))
     }
 
+    if (cookieList.nonEmpty) {
+      val requestCookieList = clientResource.getRequest.getCookies
+      requestCookieList.clear()
+      cookieList.map(c => requestCookieList.add(c))
+    }
     clientResource
   }
 
@@ -97,10 +102,11 @@ object HttpsClient {
       challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
       trustKnownCertificates: Boolean = false,
       parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None
+      timeout_ms: Option[Long] = None,
+      cookieList: Seq[Cookie] = Seq()
   ): Either[Throwable, Representation] = {
 
-    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
+    val clientResource = getClientResource(url, trustKnownCertificates, parameterList, cookieList = cookieList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     perform(clientResource.get _, timeout_ms)
@@ -132,9 +138,10 @@ object HttpsClient {
       challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
       trustKnownCertificates: Boolean = false,
       parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None
+      timeout_ms: Option[Long] = None,
+      cookieList: Seq[Cookie] = Seq()
   ): Either[Throwable, Representation] = {
-    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
+    val clientResource = getClientResource(url, trustKnownCertificates = trustKnownCertificates, parameterList = parameterList, cookieList = cookieList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     val representation = new ByteArrayRepresentation(data)
@@ -168,9 +175,10 @@ object HttpsClient {
       challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
       trustKnownCertificates: Boolean = false,
       parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None
+      timeout_ms: Option[Long] = None,
+      cookieList: Seq[Cookie] = Seq()
   ): Either[Throwable, Representation] = {
-    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
+    val clientResource = getClientResource(url, trustKnownCertificates, parameterList, cookieList = cookieList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     val representation = new FileRepresentation(file, MediaType.APPLICATION_ZIP)
@@ -204,9 +212,10 @@ object HttpsClient {
       challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
       trustKnownCertificates: Boolean = false,
       parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None
+      timeout_ms: Option[Long] = None,
+      cookieList: Seq[Cookie] = Seq()
   ): Either[Throwable, Representation] = {
-    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
+    val clientResource = getClientResource(url, trustKnownCertificates, parameterList, cookieList = cookieList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
     val representation = new FileRepresentation(file, MediaType.MULTIPART_FORM_DATA)
@@ -243,7 +252,8 @@ object HttpsClient {
       challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
       trustKnownCertificates: Boolean = false,
       parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None
+      timeout_ms: Option[Long] = None,
+      cookieList: Seq[Cookie] = Seq()
   ): Either[Throwable, Representation] = {
 
     val entity = new FileRepresentation(file, fileMediaType) //create the fileRepresentation
@@ -252,7 +262,7 @@ object HttpsClient {
     fds.getEntries.add(new FormData("FileTag", entity))
     fds.setMultipart(true)
 
-    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
+    val clientResource = getClientResource(url, trustKnownCertificates, parameterList, cookieList = cookieList)
 
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
@@ -291,7 +301,8 @@ object HttpsClient {
       challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
       trustKnownCertificates: Boolean = false,
       parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None
+      timeout_ms: Option[Long] = None,
+      cookieList: Seq[Cookie] = Seq()
   ): Either[Throwable, Representation] = {
 
     var inc = 1
@@ -303,7 +314,7 @@ object HttpsClient {
       fds.setMultipart(true)
     }
 
-    val clientResource = getClientResource(url, trustKnownCertificates, parameterList)
+    val clientResource = getClientResource(url, trustKnownCertificates, parameterList, cookieList = cookieList)
     val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
     clientResource.setChallengeResponse(challengeResponse)
 
@@ -311,8 +322,46 @@ object HttpsClient {
     perform(op _, timeout_ms)
   }
 
+  def AuthenticateViaCookies(url: String, usernameTag: String, username: String, passwordTag: String, password: String): Seq[Cookie] = {
+    val clientContext = new org.restlet.Context
+    clientContext.getAttributes.put("sslContextFactory", new TrustingSslContextFactory)
+
+    val clientResource = new ClientResource(clientContext, url)
+    val form = new Form()
+    form.add(usernameTag, username)
+    form.add(passwordTag, password)
+
+    val representation = new StringRepresentation("")
+    representation.setMediaType(MediaType.APPLICATION_WWW_FORM)
+    representation.setCharacterSet(null)
+
+    clientResource.post(form)
+
+    val response = clientResource.getResponse
+
+    val cookieSettings = response.getCookieSettings
+    println("cookieSettings.size: " + cookieSettings.size)
+    for (i <- 0 until cookieSettings.size) {
+      val cs = cookieSettings.get(i)
+      println("\n  cs " + i + " : " + cs)
+      println("  cookie setting " + i + " : " + cs.getName + " --> " + cs.getValue)
+    }
+
+    val seq = (0 until cookieSettings.size)
+      .map(i => {
+        val cs = cookieSettings.get(i)
+        (cs.getName, cs.getValue)
+      })
+      .toMap
+
+    val cookieSeq = seq.map(nv => new Cookie(nv._1, nv._2)).toSeq.sortBy(_.getName)
+
+    cookieSeq
+  }
+
+  //noinspection ScalaUnusedSymbol
   private def main3(args: Array[String]): Unit = { // TODO rm
-    val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
+    // val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
     // val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
     val file3 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_a.zip""")
     // val data = FileUtil.readBinaryFile(file1).right.get
@@ -331,6 +380,7 @@ object HttpsClient {
     println("status: " + status)
   }
 
+  //noinspection ScalaUnusedSymbol
   private def main2(args: Array[String]): Unit = { // TODO rm
     val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
     // val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
@@ -342,13 +392,8 @@ object HttpsClient {
     println("status: " + status)
   }
 
-  if (false) { // eliminate compiler warnings
-    val j0 = main2 _
-    val j1 = main3 _
-  }
-
-  def main(args: Array[String]): Unit = { // TODO rm
-
+  //noinspection ScalaUnusedSymbol
+  def main4(args: Array[String]): Unit = { // TODO rm
     val start = System.currentTimeMillis
     // val fileList = new File("""D:\pf\eclipse\workspaceOxygen\aqaclient\src\main\resources\static\certificates""").listFiles
     val fileList = new File("""\\hitspr\e$\Program Files\UMRO\AQAAWSClient\AQAClient-0.0.2\static\certificates""").listFiles
@@ -367,6 +412,22 @@ object HttpsClient {
       Trace.trace(rep.getText)
       Trace.trace("success.  Elapsed time in ms: " + elapsed)
     }
+  }
+
+  def main(args: Array[String]): Unit = { // TODO rm
+    Trace.trace("starting")
+    val url = "http://10.30.65.121/" + "auth/login"
+
+    val username = "yourUserName"
+    val password = "yourPassword"
+
+    val cookieList = AuthenticateViaCookies(url, "username", username, "password", password)
+
+    Trace.trace("Number of cookies: " + cookieList.size)
+
+    cookieList.foreach(c => Trace.trace("    " + c.getName + " --> " + c.getValue))
+
+    Trace.trace("done")
   }
 
 }
