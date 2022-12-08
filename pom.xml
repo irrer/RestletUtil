@@ -3,17 +3,17 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.umro</groupId>
     <artifactId>RestletUtil_2.12</artifactId>
-    <version>0.0.11</version>
+    <version>0.0.12</version>
     <dependencies>
-        <dependency> <groupId>org.restlet.jse</groupId>         <artifactId>org.restlet</artifactId>                <version>2.3.5</version>        </dependency>
-        <dependency> <groupId>org.restlet.jse</groupId>         <artifactId>org.restlet.ext.jackson</artifactId>    <version>2.3.5</version>        </dependency>
-        <dependency> <groupId>org.restlet.jse</groupId>         <artifactId>org.restlet.ext.httpclient</artifactId> <version>2.3.5</version>        </dependency>
-        <dependency> <groupId>edu.umro</groupId>                <artifactId>ScalaUtil_2.12</artifactId>             <version>0.0.14</version>       </dependency>
+        <dependency> <groupId>org.restlet.jse</groupId>         <artifactId>org.restlet</artifactId>                <version>2.4.0</version>        </dependency>
+        <dependency> <groupId>org.restlet.jse</groupId>         <artifactId>org.restlet.ext.jackson</artifactId>    <version>2.4.0</version>        </dependency>
+        <dependency> <groupId>org.restlet.jse</groupId>         <artifactId>org.restlet.ext.httpclient</artifactId> <version>2.4.0</version>        </dependency>
+        <dependency> <groupId>edu.umro</groupId>                <artifactId>ScalaUtil_2.12</artifactId>             <version>0.0.15</version>       </dependency>
         <dependency> <groupId>com.jsuereth</groupId>            <artifactId>scala-arm_2.12</artifactId>             <version>2.0</version>          </dependency>
         <dependency> <groupId>org.restlet.jee</groupId>         <artifactId>org.restlet.ext.html</artifactId>       <version>2.4.0</version>        </dependency>
-        <dependency> <groupId>org.scala-lang.modules</groupId>  <artifactId>scala-xml_2.12</artifactId>             <version>1.0.5</version>        </dependency>
+        <dependency> <groupId>org.scala-lang.modules</groupId>  <artifactId>scala-xml_2.12</artifactId>             <version>2.1.0</version>        </dependency>
     </dependencies>
-    <!-- 
+    <!--
      -->
 
     <properties>
@@ -25,9 +25,15 @@
         <!-- <sourceDirectory>src</sourceDirectory> -->
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.1.2</version>
+                <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-compiler-plugin</artifactId> <version>3.10.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-source-plugin</artifactId> <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -37,12 +43,9 @@
                     </execution>
                 </executions>
             </plugin>
-            
-            
+
 			<plugin>  <!-- jar with dependencies -->
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.3.0</version>
-				<configuration>
+				<artifactId>maven-assembly-plugin</artifactId> <version>3.4.2</version> <configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
@@ -56,7 +59,7 @@
 					</execution>
 				</executions>
 			</plugin>
-            
+
         </plugins>
     </build>
 
