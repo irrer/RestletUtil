@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.umro</groupId>
     <artifactId>RestletUtil_2.12</artifactId>
-    <version>0.0.12</version>
+    <version>0.0.13</version>
     <dependencies>
         <dependency> <groupId>org.restlet.jse</groupId>         <artifactId>org.restlet</artifactId>                <version>2.4.0</version>        </dependency>
         <dependency> <groupId>org.restlet.jse</groupId>         <artifactId>org.restlet.ext.jackson</artifactId>    <version>2.4.0</version>        </dependency>
         <dependency> <groupId>org.restlet.jse</groupId>         <artifactId>org.restlet.ext.httpclient</artifactId> <version>2.4.0</version>        </dependency>
-        <dependency> <groupId>edu.umro</groupId>                <artifactId>ScalaUtil_2.12</artifactId>             <version>0.0.15</version>       </dependency>
+        <dependency> <groupId>edu.umro</groupId>                <artifactId>ScalaUtil_2.12</artifactId>             <version>0.0.17</version>       </dependency>
         <dependency> <groupId>com.jsuereth</groupId>            <artifactId>scala-arm_2.12</artifactId>             <version>2.0</version>          </dependency>
         <dependency> <groupId>org.restlet.jee</groupId>         <artifactId>org.restlet.ext.html</artifactId>       <version>2.4.0</version>        </dependency>
         <dependency> <groupId>org.scala-lang.modules</groupId>  <artifactId>scala-xml_2.12</artifactId>             <version>2.1.0</version>        </dependency>

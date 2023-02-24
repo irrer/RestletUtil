@@ -58,7 +58,7 @@ class CachedSecretVerifier(actualVerify: (String, Array[Char]) => Boolean, expir
   override def toString: String = {
     val timeFormat = new SimpleDateFormat("HH:mm:ss")
     def fmtTime(t: Long): String = timeFormat.format(new Date(t - System.currentTimeMillis))
-    def fmtHistory(hist: (String, Long)): String = hist._1.formatted("%16s") + " : " + fmtTime(hist._2)
+    def fmtHistory(hist: (String, Long)): String = hist._1.format("%16s") + " : " + fmtTime(hist._2)
     history.foldLeft("Verified users an time until expiration:")((t, h) => t + ("\n    " + fmtHistory(h)))
   }
 
