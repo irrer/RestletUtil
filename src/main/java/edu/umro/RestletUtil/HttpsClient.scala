@@ -17,7 +17,7 @@
 package edu.umro.RestletUtil
 
 import edu.umro.ScalaUtil.{FileUtil, Trace}
-import org.restlet.data.{ChallengeResponse, ChallengeScheme, Cookie, Form, MediaType}
+import org.restlet.data._
 import org.restlet.ext.html.{FormData, FormDataSet}
 import org.restlet.representation.{ByteArrayRepresentation, FileRepresentation, Representation, StringRepresentation}
 import org.restlet.resource.ClientResource
@@ -82,18 +82,13 @@ object HttpsClient {
     * Fetch content via HTTPS or HTTP.  If there is a security failure then
     * a <code>CertificateException</code> is thrown.
     *
-    * @param url: URL of service
-    *
-    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
-    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
-    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-    *
-    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-    * function. Defaults to false.
-    *
-    * @param timeout_ms: If defined, timeout after this many ms.
+    * @param url                    : URL of service
+    * @param userId                 : User id to authenticate with.  If not needed, then it need not be given or be an empty string.
+    * @param password               : Password to authenticate with.  If not needed, then it need not be given or be an empty string.
+    * @param challengeScheme        : Defaults to ChallengeScheme.HTTP_BASIC.
+    * @param trustKnownCertificates : If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+    *                               function. Defaults to false.
+    * @param timeout_ms             : If defined, timeout after this many ms.
     */
   def httpsGet(
       url: String,
@@ -116,20 +111,15 @@ object HttpsClient {
     * Post content via HTTPS or HTTP.
     *
     * @param url: URL of service
-    *
     * @param data: Content to post
-    *
     * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
     * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
     * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-    *
     * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
     * function. Defaults to false.
-    *
     * @param timeout_ms: If defined, timeout after this many ms.
     */
+//noinspection ScalaUnusedSymbol
   def httpsPost(
       url: String,
       data: Array[Byte],
@@ -153,20 +143,15 @@ object HttpsClient {
     * Post content via HTTPS or HTTP.
     *
     * @param url: URL of service
-    *
     * @param file: Content to post
-    *
     * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
     * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
     * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-    *
     * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
     * function. Defaults to false.
-    *
     * @param timeout_ms: If defined, timeout after this many ms.
     */
+//noinspection ScalaUnusedSymbol
   def httpsPostZipFile(
       url: String,
       file: File,
@@ -190,20 +175,15 @@ object HttpsClient {
     * Post content via HTTPS or HTTP.
     *
     * @param url: URL of service
-    *
-    * @param file: Content to post
-    *
-    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
-    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
-    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-    *
-    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-    * function. Defaults to false.
-    *
-    * @param timeout_ms: If defined, timeout after this many ms.
+    * @param file                   : Content to post
+    * @param userId                  : User id to authenticate with.  If not needed, then it need not be given or be an empty string.
+    * @param password               : Password to authenticate with.  If not needed, then it need not be given or be an empty string.
+    * @param challengeScheme        : Defaults to ChallengeScheme.HTTP_BASIC.
+    * @param trustKnownCertificates : If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+    *                               function. Defaults to false.
+    * @param timeout_ms             : If defined, timeout after this many ms.
     */
+  //noinspection ScalaUnusedSymbol,SpellCheckingInspection
   def httpsPostMulipartFormX(
       url: String,
       file: File,
@@ -227,22 +207,16 @@ object HttpsClient {
     * Post a files as a form set data.
     *
     * @param url post to here
-    *
     * @param file Post this file
-    *
     * @param fileMediaType Media type (zip, xml, etc).
-    *
     * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
     * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
     * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-    *
     * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
     * function. Defaults to false.
-    *
     * @param timeout_ms: If defined, timeout after this many ms.
     */
+//noinspection SpellCheckingInspection
   def httpsPostSingleFileAsMulipartForm(
       url: String,
       file: File,
@@ -275,23 +249,17 @@ object HttpsClient {
   /**
     * Post multiple files as form set data.
     *
-    * @param url post to here
-    *
-    * @param fileList Post these files in this order
-    *
-    * @param fileMediaType Media type (same for all files).  If the files do not have all the same media type, then this function will not work.
-    *
-    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
-    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    *
-    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-    *
-    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-    * function. Defaults to false.
-    *
-    * @param timeout_ms: If defined, timeout after this many ms.
+    * @param url                    post to here
+    * @param fileList               Post these files in this order
+    * @param fileMediaType          Media type (same for all files).  If the files do not have all the same media type, then this function will not work.
+    * @param userId                 : User id to authenticate with.  If not needed, then it need not be given or be an empty string.
+    * @param password               : Password to authenticate with.  If not needed, then it need not be given or be an empty string.
+    * @param challengeScheme        : Defaults to ChallengeScheme.HTTP_BASIC.
+    * @param trustKnownCertificates : If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
+    *                               function. Defaults to false.
+    * @param timeout_ms             : If defined, timeout after this many ms.
     */
+  //noinspection ScalaWeakerAccess,SpellCheckingInspection
   def httpsPostMultipleFilesAsMulipartForm(
       url: String,
       fileList: Seq[File],
@@ -323,14 +291,16 @@ object HttpsClient {
   }
 
   /**
-   * Authenticate via cookies.
-   * @param url URL of login page.
-   * @param usernameTag Name of parameter specifying user name.
-   * @param username User name.
-   * @param passwordTag Name of parameter specifying password.
-   * @param password Password.
-   * @return List of cookies to be used in subsequent HTTP calls.
-   */
+    * Authenticate via cookies.
+    *
+    * @param url URL of login page.
+    * @param usernameTag Name of parameter specifying user name.
+    * @param username User name.
+    * @param passwordTag Name of parameter specifying password.
+    * @param password Password.
+    * @return List of cookies to be used in subsequent HTTP calls.
+    */
+  //noinspection ScalaWeakerAccess
   def AuthenticateViaCookies(url: String, usernameTag: String, username: String, passwordTag: String, password: String): Seq[Cookie] = {
     val clientContext = new org.restlet.Context
     clientContext.getAttributes.put("sslContextFactory", new TrustingSslContextFactory)
@@ -368,7 +338,7 @@ object HttpsClient {
     cookieSeq
   }
 
-  //noinspection ScalaUnusedSymbol
+  //noinspection SpellCheckingInspection,ScalaUnusedSymbol
   private def main3(args: Array[String]): Unit = { // TODO rm
     // val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
     // val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
@@ -389,7 +359,7 @@ object HttpsClient {
     println("status: " + status)
   }
 
-  //noinspection ScalaUnusedSymbol
+  //noinspection SpellCheckingInspection,ScalaUnusedSymbol
   private def main2(args: Array[String]): Unit = { // TODO rm
     val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
     // val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
@@ -401,7 +371,7 @@ object HttpsClient {
     println("status: " + status)
   }
 
-  //noinspection ScalaUnusedSymbol
+  //noinspection SpellCheckingInspection,ScalaUnusedSymbol
   def main4(args: Array[String]): Unit = { // TODO rm
     val start = System.currentTimeMillis
     // val fileList = new File("""D:\pf\eclipse\workspaceOxygen\aqaclient\src\main\resources\static\certificates""").listFiles
