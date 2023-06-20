@@ -16,15 +16,13 @@
 
 package edu.umro.RestletUtilTest
 
-import org.restlet.data.ChallengeScheme
-import edu.umro.RestletUtil.HttpsClient
-
 /**
  * Test and provide examples for HttpsClient.
  */
 object TestHttpsClient {
 
   def main(args: Array[String]): Unit = {
+    /*
     val test1 = HttpsClient.httpsGet("http://www-personal.umich.edu/~irrer/tmp/readinglist.html") // HTTP does not need user and password
     val test2 = HttpsClient.httpsGet("https://automatedqualityassurance.org") // HTTPS does not need user and password
     val test3 = HttpsClient.httpsGet("https://automatedqualityassurance.org", "someuser", "theirpassword") // HTTPS does not need user and password
@@ -36,6 +34,7 @@ object TestHttpsClient {
       if (test.isRight) test.right.get.write(System.out)
       else println("Error: " + test.left.get)
     }
+    */
   }
 
 }

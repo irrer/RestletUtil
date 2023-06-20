@@ -16,25 +16,12 @@
 
 package edu.umro.RestletUtilTest
 
-import org.restlet.Application
-import org.restlet.Request
-import org.restlet.Response
-import org.restlet.data.MediaType
-import org.restlet.data.Status
-import org.restlet.routing.Router
-import org.restlet.Restlet
-import org.restlet.Component
-import java.io.File
-import java.util.Date
-import org.restlet.routing.Template
-import edu.umro.RestletUtil.RestletHttps
-import org.restlet.Client
-import org.restlet.data.Protocol
-import org.restlet.Context
-import org.restlet.resource.ClientResource
-import edu.umro.RestletUtil.HttpsClient
-import org.restlet.data.ChallengeScheme
 import edu.umro.ScalaUtil.Trace
+import org.restlet.{Client, Context}
+import org.restlet.data.Protocol
+import org.restlet.resource.ClientResource
+
+import java.io.File
 
 /**
  * Learn about HTTPS client timeouts.
@@ -71,8 +58,8 @@ object HttpsTimeout {
     val file: File = new File("""D:\tmp\aqa\CBCT\MQATX2OBI2019Q3\RTIMAGE_19.zip""")
 
     val httpParams = "?Run=Run&AutoUpload=true&Await=true"
-    val result = HttpsClient.httpsPostSingleFileAsMulipartForm("https://localhost:9443/run/BBbyEPID_7" + httpParams, file, MediaType.APPLICATION_ZIP, "irrer", "45eetslp", ChallengeScheme.HTTP_BASIC, true)
-    Trace.trace(result)
+    // val result = HttpsClient.httpsPostSingleFileAsMulipartForm("https://localhost:9443/run/BBbyEPID_7" + httpParams, file, MediaType.APPLICATION_ZIP, "irrer", "45eetslp", ChallengeScheme.HTTP_BASIC, true)
+    // Trace.trace(result)
 
     val elapsed = System.currentTimeMillis - start
     println("\nExiting.  Elapsed ms: " + elapsed)

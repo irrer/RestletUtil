@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.umro</groupId>
     <artifactId>RestletUtil_2.12</artifactId>
-    <version>0.0.13</version>
+    <version>0.1.00</version>
     <dependencies>
         <dependency> <groupId>org.restlet.jse</groupId>         <artifactId>org.restlet</artifactId>                <version>2.4.0</version>        </dependency>
         <dependency> <groupId>org.restlet.jse</groupId>         <artifactId>org.restlet.ext.jackson</artifactId>    <version>2.4.0</version>        </dependency>

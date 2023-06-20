@@ -16,7 +16,8 @@
 
 package edu.umro.RestletUtil
 
-import edu.umro.ScalaUtil.{FileUtil, Trace}
+import edu.umro.ScalaUtil.Trace
+import org.restlet.Context
 import org.restlet.data._
 import org.restlet.ext.html.{FormData, FormDataSet}
 import org.restlet.representation.{ByteArrayRepresentation, FileRepresentation, Representation, StringRepresentation}
@@ -36,20 +37,35 @@ import scala.concurrent.{Await, Future}
   */
 object HttpsClient {
 
+  def makeChallengeResponse(scheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC, userId: String = "", password: String = ""): ChallengeResponse = {
+    val challengeResponse = new ChallengeResponse(scheme, userId, password)
+    challengeResponse
+  }
+
   /**
     * Establish the client resource, setting up the certificate trust model as the caller specified.
     *
     * @param url: URL of service
-    *
     * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
     * function. Defaults to false.
     */
-  private def getClientResource(url: String, trustKnownCertificates: Boolean, parameterList: Map[String, String], cookieList: Seq[Cookie]) = {
-    val clientResource = if (trustKnownCertificates) {
-      val clientContext = new org.restlet.Context
-      clientContext.getAttributes.put("sslContextFactory", new TrustingSslContextFactory)
-      new ClientResource(clientContext, url)
-    } else new ClientResource(url)
+  //noinspection ScalaWeakerAccess
+  def makeClientResource(
+      url: String,
+      challengeResponse: Option[ChallengeResponse] = None,
+      trustKnownCertificates: Boolean = false,
+      parameterList: Map[String, String] = Map[String, String](),
+      cookieList: Seq[Cookie] = Seq[Cookie]()
+  ): ClientResource = {
+
+    val clientResource: ClientResource = new ClientResource(new Context, url)
+
+    if (trustKnownCertificates) {
+      clientResource.getContext.getAttributes.put("sslContextFactory", new TrustingSslContextFactory)
+    }
+
+    if (challengeResponse.nonEmpty)
+      clientResource.setChallengeResponse(challengeResponse.get)
 
     if (parameterList.nonEmpty) {
       val parameters = clientResource.getContext.getParameters
@@ -82,59 +98,36 @@ object HttpsClient {
     * Fetch content via HTTPS or HTTP.  If there is a security failure then
     * a <code>CertificateException</code> is thrown.
     *
-    * @param url                    : URL of service
-    * @param userId                 : User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param password               : Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param challengeScheme        : Defaults to ChallengeScheme.HTTP_BASIC.
-    * @param trustKnownCertificates : If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-    *                               function. Defaults to false.
-    * @param timeout_ms             : If defined, timeout after this many ms.
+    * @param clientResource: Connection
+    * @param url           : URL of service
+    * @param timeout_ms    : If defined, timeout after this many ms.
     */
   def httpsGet(
+      clientResource: ClientResource,
       url: String,
-      userId: String = "",
-      password: String = "",
-      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-      trustKnownCertificates: Boolean = false,
-      parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None,
-      cookieList: Seq[Cookie] = Seq()
+      timeout_ms: Option[Long] = None
   ): Either[Throwable, Representation] = {
-
-    val clientResource = getClientResource(url, trustKnownCertificates, parameterList, cookieList = cookieList)
-    val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
-    clientResource.setChallengeResponse(challengeResponse)
+    clientResource.setReference(url)
     perform(clientResource.get _, timeout_ms)
   }
 
   /**
     * Post content via HTTPS or HTTP.
     *
+    * @param clientResource: Connection
     * @param url: URL of service
     * @param data: Content to post
-    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-    * function. Defaults to false.
     * @param timeout_ms: If defined, timeout after this many ms.
     */
 //noinspection ScalaUnusedSymbol
   def httpsPost(
+      clientResource: ClientResource,
       url: String,
       data: Array[Byte],
-      userId: String = "",
-      password: String = "",
-      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-      trustKnownCertificates: Boolean = false,
-      parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None,
-      cookieList: Seq[Cookie] = Seq()
+      timeout_ms: Option[Long] = None
   ): Either[Throwable, Representation] = {
-    val clientResource = getClientResource(url, trustKnownCertificates = trustKnownCertificates, parameterList = parameterList, cookieList = cookieList)
-    val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
-    clientResource.setChallengeResponse(challengeResponse)
     val representation = new ByteArrayRepresentation(data)
+    clientResource.setReference(url)
     def op = clientResource.post(representation)
     perform(op _, timeout_ms)
   }
@@ -142,63 +135,20 @@ object HttpsClient {
   /**
     * Post content via HTTPS or HTTP.
     *
+    * @param clientResource: Connection
     * @param url: URL of service
     * @param file: Content to post
-    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-    * function. Defaults to false.
     * @param timeout_ms: If defined, timeout after this many ms.
     */
 //noinspection ScalaUnusedSymbol
   def httpsPostZipFile(
+      clientResource: ClientResource,
       url: String,
       file: File,
-      userId: String = "",
-      password: String = "",
-      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-      trustKnownCertificates: Boolean = false,
-      parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None,
-      cookieList: Seq[Cookie] = Seq()
+      timeout_ms: Option[Long] = None
   ): Either[Throwable, Representation] = {
-    val clientResource = getClientResource(url, trustKnownCertificates, parameterList, cookieList = cookieList)
-    val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
-    clientResource.setChallengeResponse(challengeResponse)
+    clientResource.setReference(url)
     val representation = new FileRepresentation(file, MediaType.APPLICATION_ZIP)
-    def op = clientResource.post(representation)
-    perform(op _, timeout_ms)
-  }
-
-  /**
-    * Post content via HTTPS or HTTP.
-    *
-    * @param url: URL of service
-    * @param file                   : Content to post
-    * @param userId                  : User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param password               : Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param challengeScheme        : Defaults to ChallengeScheme.HTTP_BASIC.
-    * @param trustKnownCertificates : If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-    *                               function. Defaults to false.
-    * @param timeout_ms             : If defined, timeout after this many ms.
-    */
-  //noinspection ScalaUnusedSymbol,SpellCheckingInspection
-  def httpsPostMulipartFormX(
-      url: String,
-      file: File,
-      userId: String = "",
-      password: String = "",
-      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-      trustKnownCertificates: Boolean = false,
-      parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None,
-      cookieList: Seq[Cookie] = Seq()
-  ): Either[Throwable, Representation] = {
-    val clientResource = getClientResource(url, trustKnownCertificates, parameterList, cookieList = cookieList)
-    val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
-    clientResource.setChallengeResponse(challengeResponse)
-    val representation = new FileRepresentation(file, MediaType.MULTIPART_FORM_DATA)
     def op = clientResource.post(representation)
     perform(op _, timeout_ms)
   }
@@ -206,41 +156,27 @@ object HttpsClient {
   /**
     * Post a files as a form set data.
     *
-    * @param url post to here
-    * @param file Post this file
-    * @param fileMediaType Media type (zip, xml, etc).
-    * @param userId: User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param password: Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param challengeScheme: Defaults to ChallengeScheme.HTTP_BASIC.
-    * @param trustKnownCertificates: If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-    * function. Defaults to false.
-    * @param timeout_ms: If defined, timeout after this many ms.
+    * @param clientResource: Connection
+    * @param url           : URL of service
+    * @param file          : Post this file
+    * @param fileMediaType : Media type (zip, xml, etc).
+    * @param timeout_ms:   : If defined, timeout after this many ms.
     */
-//noinspection SpellCheckingInspection
+  //noinspection SpellCheckingInspection
   def httpsPostSingleFileAsMulipartForm(
+      clientResource: ClientResource,
       url: String,
       file: File,
       fileMediaType: MediaType,
-      userId: String = "",
-      password: String = "",
-      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-      trustKnownCertificates: Boolean = false,
-      parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None,
-      cookieList: Seq[Cookie] = Seq()
+      timeout_ms: Option[Long] = None
   ): Either[Throwable, Representation] = {
 
+    clientResource.setReference(url)
     val entity = new FileRepresentation(file, fileMediaType) //create the fileRepresentation
 
     val fds = new FormDataSet
     fds.getEntries.add(new FormData("FileTag", entity))
     fds.setMultipart(true)
-
-    val clientResource = getClientResource(url, trustKnownCertificates, parameterList, cookieList = cookieList)
-
-    val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
-    clientResource.setChallengeResponse(challengeResponse)
-    //val representation = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
 
     def op = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
     perform(op _, timeout_ms)
@@ -249,28 +185,19 @@ object HttpsClient {
   /**
     * Post multiple files as form set data.
     *
-    * @param url                    post to here
-    * @param fileList               Post these files in this order
-    * @param fileMediaType          Media type (same for all files).  If the files do not have all the same media type, then this function will not work.
-    * @param userId                 : User id to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param password               : Password to authenticate with.  If not needed, then it need not be given or be an empty string.
-    * @param challengeScheme        : Defaults to ChallengeScheme.HTTP_BASIC.
-    * @param trustKnownCertificates : If true, select the list of certificates specified with the <code>TrustKnownCertificates.init</code>
-    *                               function. Defaults to false.
-    * @param timeout_ms             : If defined, timeout after this many ms.
+    * @param clientResource: Connection
+    * @param url           : post to here
+    * @param fileList      : Post these files in this order
+    * @param fileMediaType : Media type (same for all files).  If the files do not have all the same media type, then this function will not work.
+    * @param timeout_ms    : If defined, timeout after this many ms.
     */
   //noinspection ScalaWeakerAccess,SpellCheckingInspection
   def httpsPostMultipleFilesAsMulipartForm(
+      clientResource: ClientResource,
       url: String,
       fileList: Seq[File],
       fileMediaType: MediaType,
-      userId: String = "",
-      password: String = "",
-      challengeScheme: ChallengeScheme = ChallengeScheme.HTTP_BASIC,
-      trustKnownCertificates: Boolean = false,
-      parameterList: Map[String, String] = Map(),
-      timeout_ms: Option[Long] = None,
-      cookieList: Seq[Cookie] = Seq()
+      timeout_ms: Option[Long] = None
   ): Either[Throwable, Representation] = {
 
     var inc = 1
@@ -281,10 +208,6 @@ object HttpsClient {
       inc = inc + 1
       fds.setMultipart(true)
     }
-
-    val clientResource = getClientResource(url, trustKnownCertificates, parameterList, cookieList = cookieList)
-    val challengeResponse = new ChallengeResponse(challengeScheme, userId, password)
-    clientResource.setChallengeResponse(challengeResponse)
 
     def op = clientResource.post(fds, MediaType.MULTIPART_FORM_DATA)
     perform(op _, timeout_ms)
@@ -338,8 +261,9 @@ object HttpsClient {
     cookieSeq
   }
 
+  /*
   //noinspection SpellCheckingInspection,ScalaUnusedSymbol
-  private def main3(args: Array[String]): Unit = { // TODO rm
+  private def main3(args: Array[String]): Unit = { //
     // val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
     // val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
     val file3 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_a.zip""")
@@ -360,7 +284,7 @@ object HttpsClient {
   }
 
   //noinspection SpellCheckingInspection,ScalaUnusedSymbol
-  private def main2(args: Array[String]): Unit = { // TODO rm
+  private def main2(args: Array[String]): Unit = { //
     val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
     // val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
     if (false) println(args.mkString(""))
@@ -372,7 +296,7 @@ object HttpsClient {
   }
 
   //noinspection SpellCheckingInspection,ScalaUnusedSymbol
-  def main4(args: Array[String]): Unit = { // TODO rm
+  def main4(args: Array[String]): Unit = { //
     val start = System.currentTimeMillis
     // val fileList = new File("""D:\pf\eclipse\workspaceOxygen\aqaclient\src\main\resources\static\certificates""").listFiles
     val fileList = new File("""\\hitspr\e$\Program Files\UMRO\AQAAWSClient\AQAClient-0.0.2\static\certificates""").listFiles
@@ -392,8 +316,9 @@ object HttpsClient {
       Trace.trace("success.  Elapsed time in ms: " + elapsed)
     }
   }
+   */
 
-  def main(args: Array[String]): Unit = { // TODO rm
+  def main(args: Array[String]): Unit = { //
     Trace.trace("starting")
     val url = "http://10.30.65.121/" + "auth/login"
 
