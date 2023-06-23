@@ -119,8 +119,8 @@ object HttpsClient {
     * @param data: Content to post
     * @param timeout_ms: If defined, timeout after this many ms.
     */
-//noinspection ScalaUnusedSymbol
-  def httpsPost(
+  //noinspection ScalaUnusedSymbol
+  private def httpsPost(
       clientResource: ClientResource,
       url: String,
       data: Array[Byte],
@@ -140,8 +140,8 @@ object HttpsClient {
     * @param file: Content to post
     * @param timeout_ms: If defined, timeout after this many ms.
     */
-//noinspection ScalaUnusedSymbol
-  def httpsPostZipFile(
+  //noinspection ScalaUnusedSymbol
+  private def httpsPostZipFile(
       clientResource: ClientResource,
       url: String,
       file: File,
@@ -260,63 +260,6 @@ object HttpsClient {
 
     cookieSeq
   }
-
-  /*
-  //noinspection SpellCheckingInspection,ScalaUnusedSymbol
-  private def main3(args: Array[String]): Unit = { //
-    // val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
-    // val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
-    val file3 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_a.zip""")
-    // val data = FileUtil.readBinaryFile(file1).right.get
-    //val status = httpsPostSingleFileAsMulipartForm("http://localhost/run/BBbyCBCT_6", file1, MediaType.APPLICATION_ALL, "userid", "password")
-    //val status = httpsPostSingleFileAsMulipartForm("http://localhost/run/BBbyCBCT_6", file1, MediaType.APPLICATION_ZIP, "userid", "password")
-    val status = httpsPostSingleFileAsMulipartForm("http://localhost/run/BBbyCBCT_6?Run=Run", file3, MediaType.APPLICATION_ZIP, "userid", "password")
-    status match {
-      case Left(ex) => println("Resource exception: " + ex)
-      case Right(rep) =>
-        println("Representation: " + rep)
-        val baos = new java.io.ByteArrayOutputStream
-        FileUtil.copyStream(rep.getStream, baos)
-        val text = new String(baos.toByteArray)
-        println("Return text: " + text)
-    }
-    println("status: " + status)
-  }
-
-  //noinspection SpellCheckingInspection,ScalaUnusedSymbol
-  private def main2(args: Array[String]): Unit = { //
-    val file1 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\TX1_2019_05_14_upload.zip""")
-    // val file2 = new File("""D:\tmp\aqa\CBCT\MQATX1OBIQA2019Q3\tiny.txt""")
-    if (false) println(args.mkString(""))
-    val fileList = Seq(file1)
-    //val status = httpsPost("http://localhost/run/BBbyCBCT_6", data, "userid", "password")
-    //val status = httpsPostZipFile("http://localhost/run/BBbyCBCT_6", file, "userid", "password")
-    val status = httpsPostMultipleFilesAsMulipartForm("http://localhost/run/BBbyCBCT_6/?Runny=yeah", fileList, MediaType.TEXT_PLAIN, "userid", "password")
-    println("status: " + status)
-  }
-
-  //noinspection SpellCheckingInspection,ScalaUnusedSymbol
-  def main4(args: Array[String]): Unit = { //
-    val start = System.currentTimeMillis
-    // val fileList = new File("""D:\pf\eclipse\workspaceOxygen\aqaclient\src\main\resources\static\certificates""").listFiles
-    val fileList = new File("""\\hitspr\e$\Program Files\UMRO\AQAAWSClient\AQAClient-0.0.2\static\certificates""").listFiles
-    println("fileList: " + fileList.map(_.getName).mkString("\n"))
-    TrustKnownCertificates.init(fileList)
-
-    // val url = "https://uhroappwebsdv1.umhs.med.umich.edu:8111/GetSeries?PatientID=MQATX4OBIQA2019Q3"
-    val url = """https://automatedqualityassurance.org/GetSeries?PatientID=$AQA_TB3"""
-    // val status = httpsGet(url, "irrer", "45eetslp", ChallengeScheme.HTTP_BASIC, trustKnownCertificates = true, timeout_ms = Some(20000.toLong))
-    val status = httpsGet(url, "irrer", "23eetslp", ChallengeScheme.HTTP_BASIC, trustKnownCertificates = true, timeout_ms = Some(20000.toLong))
-    val elapsed = System.currentTimeMillis - start
-    Trace.trace("status: " + status)
-    if (status.isRight) {
-      val rep = status.right.get
-      Trace.trace(rep)
-      Trace.trace(rep.getText)
-      Trace.trace("success.  Elapsed time in ms: " + elapsed)
-    }
-  }
-   */
 
   def main(args: Array[String]): Unit = { //
     Trace.trace("starting")
