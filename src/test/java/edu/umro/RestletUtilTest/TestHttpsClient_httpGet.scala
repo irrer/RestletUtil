@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream
 object TestHttpsClient_httpGet extends Logging {
   def main(args: Array[String]): Unit = {
 
-    if (args.size != 3) {
+    if (args.length != 3) {
       println("Failure.  Must be run with parameters: url userId password")
       System.exit(1)
     }
@@ -25,10 +25,11 @@ object TestHttpsClient_httpGet extends Logging {
 
     var size: Int = -1
 
-    for (i <- 0 until 100) {
+    val start = System.currentTimeMillis()
+    for (_ <- 0 until 100) {
       HttpsClient.httpsGet(clientResource, url) match {
         case Left(throwable) =>
-          s"Failed to get $url: ${fmtEx(throwable)}"
+          println(s"Failed to get $url: ${fmtEx(throwable)}")
           System.exit(1)
         case Right(representation) =>
           val bos = new ByteArrayOutputStream()
@@ -42,10 +43,11 @@ object TestHttpsClient_httpGet extends Logging {
             println(s"$url failed with ${data.length} bytes when $size was expected.")
             System.exit(1)
           } else {
-            println(s"$url succeeded with ${size} bytes.")
+            println(s"$url succeeded with $size bytes.")
           }
       }
     }
-    println("Success!")
+    val elapsed = System.currentTimeMillis() - start
+    println(s"Success!  elapsed ms: $elapsed")
   }
 }
