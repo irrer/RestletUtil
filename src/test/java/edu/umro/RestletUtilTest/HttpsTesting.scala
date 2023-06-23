@@ -37,7 +37,7 @@ import edu.umro.RestletUtil.RestletHttps
 class HttpsTesting extends Restlet {
     override def handle(request: Request, response: Response): Unit = {
         response.setStatus(Status.SUCCESS_OK)
-        val msg = "Yay - it works! " + (new Date)
+        val msg = "Yay - it works! " + new Date
         response.setEntity(msg, MediaType.TEXT_PLAIN)
         println(msg)
     }
@@ -49,15 +49,15 @@ class HttpsTestApp extends Application {
     val httpsPort = 9099
 
     val component = new Component
-    val fileNameList = List(
+    val fileNameList: List[String] = List(
         "keystore.jks",
         "C:\\Program Files\\UMRO\\keystore.jks",
         "src\\main\\resources\\keystore.jks",
         "C:\\Program Files\\UMRO\\keystore.jks")
 
-    val pwList = List("aFakePassword", "", "thisWillNotWork")
+    val pwList: List[String] = List("aFakePassword", "", "thisWillNotWork")
 
-    val ks = RestletHttps.addHttps(component, httpsPort, fileNameList.map(fn => new File(fn)), pwList)
+    val ks: Either[String, RestletHttps.KeystorePassword] = RestletHttps.addHttps(component, httpsPort, fileNameList.map(fn => new File(fn)), pwList)
 
     if (ks.isLeft) {
         println("Failed: " + ks.left.get)
@@ -86,13 +86,13 @@ object HttpsTesting {
         val httpsPort = 9099
 
         println("Standard files: ")
-        RestletHttps.standardKeystoreFileList.map(f => println("    " + f.getAbsolutePath))
+        RestletHttps.standardKeystoreFileList.foreach(f => println("    " + f.getAbsolutePath))
         println("Number of standard passwords found: " + RestletHttps.standardPasswordList.size)
         val app = new HttpsTestApp
 
         app.component.getDefaultHost.attach(app)
         println("starting web service ...")
-        app.component.start
+        app.component.start()
 
         print("Waiting.  Go to \n\n    https://localhost:" + httpsPort + "\n\nand ignore scary warnings.\n\nCountdown until automatic shutdown:")
         val stop = System.currentTimeMillis + (10 * 60 * 1000)
