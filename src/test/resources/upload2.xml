@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<SavedConfigParameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://tempuri.org/DisplayLogXMLSchema.xsd">
+  <DateTimeSaved>Wednesday, 31 May 2023 12:24:38</DateTimeSaved>
+  <LoggedInUser>ServiceHASPBasic</LoggedInUser>
+  <Environment>
+    <MachineSerialNumber>3068</MachineSerialNumber>
+    <SystemVersion>02.07.4001</SystemVersion>
+    <ServiceSoftwareVersion>2.7.400.27</ServiceSoftwareVersion>
+    <RTSSVersion>2.7.304.20</RTSSVersion>
+  </Environment>
+  <Node name="Kilo Voltage Source">
+    <Group name="KVBladeX1 Calibration Data">
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="false" New_Value="true" />
+      <Parameter Enum_Name="SYS_CALIB_AUTO_CALIB" Display_Name="Automated System Calibration" Old_Value="true" New_Value="true" />
+      <Parameter Enum_Name="SYS_CALIB_DATETIME" Display_Name="System Calibration Date and Time" Old_Value="2023-03-22T17:55:09.097-04:00" New_Value="2023-05-31T12:04:49.9045469-04:00" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_DETECTED" Display_Name="Detected Position 1" Old_Value="9.58183861921064" New_Value="9.56320260235472" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_REPORTED" Display_Name="Reported Position 1" Old_Value="10.0005059482442" New_Value="10.0000854728404" />
+      <Parameter Enum_Name="SYS_CALIB_POS2_DETECTED" Display_Name="Detected Position 2" Old_Value="1.53838029312945" New_Value="1.52220427367107" />
+      <Parameter Enum_Name="SYS_CALIB_POS2_REPORTED" Display_Name="Reported Position 2" Old_Value="1.99393051799558" New_Value="1.9906078476409" />
+    </Group>
+    <Group name="KVFilterFoil Calibration Data">
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="false" New_Value="true" />
+      <Parameter Enum_Name="SYS_CALIB_DATETIME" Display_Name="System Calibration Date and Time" Old_Value="2023-03-22T17:55:32.706375-04:00" New_Value="2023-05-31T12:04:57.1633359-04:00" />
+      <Parameter Enum_Name="SYS_CALIB_AUTO_CALIB" Display_Name="Automated System Calibration" Old_Value="false" New_Value="false" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_DETECTED" Display_Name="Detected Position 1" Old_Value="0" New_Value="0" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_REPORTED" Display_Name="Reported Position 1" Old_Value="0" New_Value="0" />
+    </Group>
+    <Group name="KVBladeX2 Calibration Data">
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="false" New_Value="true" />
+      <Parameter Enum_Name="SYS_CALIB_AUTO_CALIB" Display_Name="Automated System Calibration" Old_Value="true" New_Value="true" />
+      <Parameter Enum_Name="SYS_CALIB_DATETIME" Display_Name="System Calibration Date and Time" Old_Value="2023-03-22T17:55:09.097-04:00" New_Value="2023-05-31T12:04:49.9045469-04:00" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_DETECTED" Display_Name="Detected Position 1" Old_Value="10.9801552523859" New_Value="11.0019506283274" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_REPORTED" Display_Name="Reported Position 1" Old_Value="10.0006521825916" New_Value="9.99972439451458" />
+      <Parameter Enum_Name="SYS_CALIB_POS2_DETECTED" Display_Name="Detected Position 2" Old_Value="2.95271178609762" New_Value="2.97570458700496" />
+      <Parameter Enum_Name="SYS_CALIB_POS2_REPORTED" Display_Name="Reported Position 2" Old_Value="1.99291587436264" New_Value="1.99372940325607" />
+    </Group>
+    <Group name="KVBladeY1 Calibration Data">
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="false" New_Value="true" />
+      <Parameter Enum_Name="SYS_CALIB_AUTO_CALIB" Display_Name="Automated System Calibration" Old_Value="true" New_Value="true" />
+      <Parameter Enum_Name="SYS_CALIB_DATETIME" Display_Name="System Calibration Date and Time" Old_Value="2023-03-22T17:55:09.097-04:00" New_Value="2023-05-31T12:04:49.9045469-04:00" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_DETECTED" Display_Name="Detected Position 1" Old_Value="7.89586675133117" New_Value="7.9312945855406" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_REPORTED" Display_Name="Reported Position 1" Old_Value="7.0012919892757" New_Value="7.00001789898475" />
+      <Parameter Enum_Name="SYS_CALIB_POS2_DETECTED" Display_Name="Detected Position 2" Old_Value="2.89576060205491" New_Value="2.92502300234976" />
+      <Parameter Enum_Name="SYS_CALIB_POS2_REPORTED" Display_Name="Reported Position 2" Old_Value="2.00015507546603" New_Value="2.0002407287623" />
+    </Group>
+    <Group name="KVBladeY2 Calibration Data">
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="false" New_Value="true" />
+      <Parameter Enum_Name="SYS_CALIB_AUTO_CALIB" Display_Name="Automated System Calibration" Old_Value="true" New_Value="true" />
+      <Parameter Enum_Name="SYS_CALIB_DATETIME" Display_Name="System Calibration Date and Time" Old_Value="2023-03-22T17:55:09.097-04:00" New_Value="2023-05-31T12:04:49.9045469-04:00" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_DETECTED" Display_Name="Detected Position 1" Old_Value="6.90582323508798" New_Value="6.87148142541887" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_REPORTED" Display_Name="Reported Position 1" Old_Value="7.00032303380361" New_Value="6.9998465880856" />
+      <Parameter Enum_Name="SYS_CALIB_POS2_DETECTED" Display_Name="Detected Position 2" Old_Value="1.90546656755319" New_Value="1.87452118025684" />
+      <Parameter Enum_Name="SYS_CALIB_POS2_REPORTED" Display_Name="Reported Position 2" Old_Value="1.99986599178755" New_Value="2.00006941786315" />
+    </Group>
+    <Group name="KVFilterShape Calibration Data">
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="false" New_Value="true" />
+      <Parameter Enum_Name="SYS_CALIB_DATETIME" Display_Name="System Calibration Date and Time" Old_Value="2023-03-22T17:55:09.097-04:00" New_Value="2023-05-31T12:04:49.9045469-04:00" />
+      <Parameter Enum_Name="SYS_CALIB_AUTO_CALIB" Display_Name="Automated System Calibration" Old_Value="true" New_Value="true" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_DETECTED" Display_Name="Detected Position 1" Old_Value="2.11065430970622" New_Value="2.13950074399157" />
+      <Parameter Enum_Name="SYS_CALIB_POS1_REPORTED" Display_Name="Reported Position 1" Old_Value="1" New_Value="1" />
+    </Group>
+  </Node>
+</SavedConfigParameters>

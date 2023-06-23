@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<SavedConfigParameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://tempuri.org/DisplayLogXMLSchema.xsd">
+  <DateTimeSaved>Wednesday, 31 May 2023 11:59:20</DateTimeSaved>
+  <LoggedInUser>ServiceHASPBasic</LoggedInUser>
+  <Environment>
+    <MachineSerialNumber>3068</MachineSerialNumber>
+    <SystemVersion>02.07.4001</SystemVersion>
+    <ServiceSoftwareVersion>2.7.400.27</ServiceSoftwareVersion>
+    <RTSSVersion>2.7.304.20</RTSSVersion>
+  </Environment>
+  <Node name="Kilo Voltage Source">
+    <Group name="KVBladeX1 Calibration Data">
+      <Parameter Enum_Name="AXIS_CALIB_VALID" Display_Name="Axis Calibration Valid" Old_Value="true" New_Value="true" />
+      <Parameter Enum_Name="AXIS_CALIB_DATETIME" Display_Name="Axis Calibration Date and Time" Old_Value="2022-09-06T17:40:39" New_Value="2023-05-31T11:58:18" />
+      <Parameter Enum_Name="REFERENCE_POSITION" Display_Name="Reference Position" Old_Value="2.8257" New_Value="2.8254" />
+      <Parameter Enum_Name="DIST_TO_HARDSTOP_A" Display_Name="Distance to Hardstop A" Old_Value="-0.1143" New_Value="-0.1146" />
+      <Parameter Enum_Name="DIST_TO_HARDSTOP_B" Display_Name="Distance to Hardstop B" Old_Value="-3.5041" New_Value="-3.5069" />
+      <Parameter Enum_Name="TRAVEL_DIST" Display_Name="Travel Distance" Old_Value="-3.58" New_Value="-3.58" />
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="true" New_Value="false" />
+    </Group>
+    <Group name="KVFilterFoil Calibration Data">
+      <Parameter Enum_Name="AXIS_CALIB_VALID" Display_Name="Axis Calibration Valid" Old_Value="true" New_Value="true" />
+      <Parameter Enum_Name="AXIS_CALIB_DATETIME" Display_Name="Axis Calibration Date and Time" Old_Value="2022-09-06T17:40:39" New_Value="2023-05-31T11:58:18" />
+      <Parameter Enum_Name="REFERENCE_POSITION" Display_Name="Reference Position" Old_Value="0.0381" New_Value="0.0388" />
+      <Parameter Enum_Name="DIST_TO_HARDSTOP_B" Display_Name="Distance to Hardstop B" Old_Value="15.0647" New_Value="15.0776" />
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="true" New_Value="false" />
+    </Group>
+    <Group name="KVBladeX2 Calibration Data">
+      <Parameter Enum_Name="AXIS_CALIB_VALID" Display_Name="Axis Calibration Valid" Old_Value="true" New_Value="true" />
+      <Parameter Enum_Name="AXIS_CALIB_DATETIME" Display_Name="Axis Calibration Date and Time" Old_Value="2022-09-06T17:40:39" New_Value="2023-05-31T11:58:18" />
+      <Parameter Enum_Name="REFERENCE_POSITION" Display_Name="Reference Position" Old_Value="2.8882" New_Value="2.8874" />
+      <Parameter Enum_Name="DIST_TO_HARDSTOP_A" Display_Name="Distance to Hardstop A" Old_Value="-0.0518" New_Value="-0.0526" />
+      <Parameter Enum_Name="DIST_TO_HARDSTOP_B" Display_Name="Distance to Hardstop B" Old_Value="-3.5755" New_Value="-3.5767" />
+      <Parameter Enum_Name="TRAVEL_DIST" Display_Name="Travel Distance" Old_Value="-3.58" New_Value="-3.58" />
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="true" New_Value="false" />
+    </Group>
+    <Group name="KVBladeY1 Calibration Data">
+      <Parameter Enum_Name="AXIS_CALIB_VALID" Display_Name="Axis Calibration Valid" Old_Value="true" New_Value="true" />
+      <Parameter Enum_Name="AXIS_CALIB_DATETIME" Display_Name="Axis Calibration Date and Time" Old_Value="2022-09-06T17:40:39" New_Value="2023-05-31T11:58:18" />
+      <Parameter Enum_Name="REFERENCE_POSITION" Display_Name="Reference Position" Old_Value="2.8902" New_Value="2.8897" />
+      <Parameter Enum_Name="DIST_TO_HARDSTOP_A" Display_Name="Distance to Hardstop A" Old_Value="-0.0498" New_Value="-0.0503" />
+      <Parameter Enum_Name="DIST_TO_HARDSTOP_B" Display_Name="Distance to Hardstop B" Old_Value="-3.5383" New_Value="-3.5424" />
+      <Parameter Enum_Name="TRAVEL_DIST" Display_Name="Travel Distance" Old_Value="-3.58" New_Value="-3.58" />
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="true" New_Value="false" />
+    </Group>
+    <Group name="KVBladeY2 Calibration Data">
+      <Parameter Enum_Name="AXIS_CALIB_VALID" Display_Name="Axis Calibration Valid" Old_Value="true" New_Value="true" />
+      <Parameter Enum_Name="AXIS_CALIB_DATETIME" Display_Name="Axis Calibration Date and Time" Old_Value="2022-09-06T17:40:39" New_Value="2023-05-31T11:58:18" />
+      <Parameter Enum_Name="REFERENCE_POSITION" Display_Name="Reference Position" Old_Value="2.903" New_Value="2.9034" />
+      <Parameter Enum_Name="DIST_TO_HARDSTOP_A" Display_Name="Distance to Hardstop A" Old_Value="-0.037" New_Value="-0.0366" />
+      <Parameter Enum_Name="DIST_TO_HARDSTOP_B" Display_Name="Distance to Hardstop B" Old_Value="-3.57" New_Value="-3.5694" />
+      <Parameter Enum_Name="TRAVEL_DIST" Display_Name="Travel Distance" Old_Value="-3.58" New_Value="-3.58" />
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="true" New_Value="false" />
+    </Group>
+    <Group name="KVFilterShape Calibration Data">
+      <Parameter Enum_Name="AXIS_CALIB_VALID" Display_Name="Axis Calibration Valid" Old_Value="true" New_Value="true" />
+      <Parameter Enum_Name="AXIS_CALIB_DATETIME" Display_Name="Axis Calibration Date and Time" Old_Value="2022-09-06T17:40:39" New_Value="2023-05-31T11:58:18" />
+      <Parameter Enum_Name="REFERENCE_POSITION" Display_Name="Reference Position" Old_Value="0.067" New_Value="0.0674" />
+      <Parameter Enum_Name="DIST_TO_HARDSTOP_B" Display_Name="Distance to Hardstop B" Old_Value="19.362" New_Value="19.358" />
+      <Parameter Enum_Name="SYS_CALIB_VALID" Display_Name="System Calibration Valid" Old_Value="true" New_Value="false" />
+    </Group>
+  </Node>
+</SavedConfigParameters>
