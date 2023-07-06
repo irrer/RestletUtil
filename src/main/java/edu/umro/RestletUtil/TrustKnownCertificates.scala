@@ -80,7 +80,7 @@ object TrustKnownCertificates {
 
   private val endCert = "-----END CERTIFICATE-----"
 
-  val certFactory: CertificateFactory = CertificateFactory.getInstance("X.509")
+  private val certFactory: CertificateFactory = CertificateFactory.getInstance("X.509")
 
   private def certFileToInputStreamList(file: File): Seq[InputStream] = {
 
@@ -106,7 +106,7 @@ object TrustKnownCertificates {
   /**
     * Provide read-only access to configured certs.
     */
-  def knownCerts: Array[X509Certificate] = configuredCertsBuffer.toList.toArray
+  private def knownCerts: Array[X509Certificate] = configuredCertsBuffer.toList.toArray
 
   private def inStreamToCert(inStream: InputStream): Option[Certificate] = {
     try {
