@@ -30,6 +30,7 @@ import java.util.Date
   * @param expirationIntervalInMs : Time in milliseconds before users authorization will
   * expire.  After this, the actualVerify will be called again to renew them.
   */
+//noinspection ScalaUnusedSymbol
 class CachedSecretVerifier(actualVerify: (String, Array[Char]) => Boolean, expirationIntervalInMs: Long) extends SecretVerifier {
 
   /** List of verified users and their expiration time. */
@@ -53,6 +54,7 @@ class CachedSecretVerifier(actualVerify: (String, Array[Char]) => Boolean, expir
   /**
     * Get a list of active users with their expiration times.
     */
+  //noinspection ScalaUnusedSymbol
   def getActiveUsers: List[(String, Long)] = history.synchronized(history.toList)
 
   override def toString: String = {
@@ -65,6 +67,7 @@ class CachedSecretVerifier(actualVerify: (String, Array[Char]) => Boolean, expir
   /**
     * Remove any users whose logins have expired.
     */
+  //noinspection ScalaUnusedSymbol
   def removeExpiredEntries(): Unit = history.synchronized(clean)
 
   /**
